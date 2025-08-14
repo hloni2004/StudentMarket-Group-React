@@ -110,9 +110,9 @@ const AdminDashboard = () => {
       </div>
 
       <div className="container-fluid px-4 py-4">
-        {/* Statistics Overview */}
+        {/* Statistics Overview - Updated to 2 columns */}
         <div className="row g-3 mb-4">
-          <div className="col-lg-3 col-md-6">
+          <div className="col-lg-6 col-md-6">
             <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
               <div className="card-body p-4">
                 <div className="d-flex align-items-center">
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
             </div>
           </div>
           
-          <div className="col-lg-3 col-md-6">
+          <div className="col-lg-6 col-md-6">
             <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
               <div className="card-body p-4">
                 <div className="d-flex align-items-center">
@@ -136,43 +136,8 @@ const AdminDashboard = () => {
                     <FaBoxOpen className="text-success" size={20} />
                   </div>
                   <div className="ms-3">
-                    <h6 className="text-muted mb-0 small">Active Products</h6>
+                    <h6 className="text-muted mb-0 small">Number of Products</h6>
                     <h4 className="mb-0 fw-bold text-dark">{productsCount !== null ? productsCount.toLocaleString() : '--'}</h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-lg-3 col-md-6">
-            <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div className="card-body p-4">
-                <div className="d-flex align-items-center">
-                  <div className="p-2 rounded" style={{ backgroundColor: '#fefce8' }}>
-                    <FaDatabase className="text-warning" size={20} />
-                  </div>
-                  <div className="ms-3">
-                    <h6 className="text-muted mb-0 small">Total Records</h6>
-                    <h4 className="mb-0 fw-bold text-dark">
-                      {(studentsCount !== null && productsCount !== null) ? 
-                        (studentsCount + productsCount).toLocaleString() : '--'}
-                    </h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-lg-3 col-md-6">
-            <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div className="card-body p-4">
-                <div className="d-flex align-items-center">
-                  <div className="p-2 rounded" style={{ backgroundColor: '#fdf2f8' }}>
-                    <FaChartBar style={{ color: '#ec4899' }} size={20} />
-                  </div>
-                  <div className="ms-3">
-                    <h6 className="text-muted mb-0 small">System Status</h6>
-                    <h4 className="mb-0 fw-bold" style={{ color: '#22c55e' }}>Active</h4>
                   </div>
                 </div>
               </div>
