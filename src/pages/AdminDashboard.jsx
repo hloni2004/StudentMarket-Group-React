@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { FaUsers, FaBoxOpen } from "react-icons/fa";
-import "../App.css"; // Import the CSS file
+import { FaUsers, FaBoxOpen, FaSignOutAlt, FaChartBar, FaDatabase } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const [students, setStudents] = useState([]);
@@ -16,12 +16,14 @@ const AdminDashboard = () => {
     products: null
   });
 
+  const navigate = useNavigate();
+
   const fetchStudents = async () => {
     setLoading(prev => ({ ...prev, students: true }));
     setError(prev => ({ ...prev, students: null }));
 
     try {
-      const response = await fetch('http://localhost:8080/api/student/getAll');
+      const response = await fetch('http://localhost:8080/api/students/getAll');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -29,7 +31,6 @@ const AdminDashboard = () => {
       
       const data = await response.json();
       
-      // Extract student names for display
       const studentNames = data.map(student => 
         `${student.firstName} ${student.lastName}`
       );
@@ -60,7 +61,6 @@ const AdminDashboard = () => {
       
       const data = await response.json();
       
-      // Extract product names for display
       const productNames = data.map(product => product.productName);
       
       setProducts(productNames);
@@ -76,133 +76,296 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   return (
-    <div className="dashboard">
-      {/* Main heading at the top center */}
-      <div className="header-section">
-        <h1 className="main-heading">📊 Admin Dashboard</h1>
-        <p className="subtitle">Manage your student marketplace efficiently</p>
+    <div className="min-vh-100" style={{ backgroundColor: '#f8fafc' }}>
+      {/* Header */}
+      <div className="border-bottom bg-white shadow-sm">
+        <div className="container-fluid px-4 py-3">
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center justify-content-center me-3" 
+                   style={{ width: '40px', height: '40px', backgroundColor: '#3b82f6', borderRadius: '8px' }}>
+                <FaChartBar className="text-white" size={20} />
+              </div>
+              <div>
+                <h5 className="mb-0 text-dark fw-semibold">Admin Dashboard</h5>
+                <small className="text-muted">Student Trade Management</small>
+              </div>
+            </div>
+            <button 
+              className="btn btn-outline-secondary"
+              onClick={handleLogout}
+              style={{ borderRadius: '8px' }}
+            >
+              <FaSignOutAlt className="me-2" size={14} />
+              Sign Out
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Two column layout */}
-      <div className="main-content">
-        {/* Left Column - Students */}
-        <div className="content-column">
-          {/* Student Action Button */}
-          <div className="actions-section">
-            <button 
-              className={`fetch-btn ${loading.students ? 'loading' : ''}`}
-              onClick={fetchStudents}
-              disabled={loading.students}
-            >
-              <FaUsers style={{ marginRight: "8px" }} /> 
-              {loading.students ? "Loading..." : "Fetch Students"}
-            </button>
-          </div>
-
-          {/* Student Error Message */}
-          {error.students && (
-            <div className="error-section">
-              <div className="error-message">
-                ⚠️ Error fetching students: {error.students}
+      <div className="container-fluid px-4 py-4">
+        {/* Statistics Overview */}
+        <div className="row g-3 mb-4">
+          <div className="col-lg-3 col-md-6">
+            <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center">
+                  <div className="p-2 rounded" style={{ backgroundColor: '#eff6ff' }}>
+                    <FaUsers className="text-primary" size={20} />
+                  </div>
+                  <div className="ms-3">
+                    <h6 className="text-muted mb-0 small">Total Students</h6>
+                    <h4 className="mb-0 fw-bold text-dark">{studentsCount !== null ? studentsCount.toLocaleString() : '--'}</h4>
+                  </div>
+                </div>
               </div>
             </div>
-          )}
-
-          {/* Student Statistics */}
-          <div className="stats-section">
-            <div className="info-card">
-              <div className="card-icon">
-                <FaUsers size={24} />
-              </div>
-              <div className="card-content">
-                <h3>Total Students</h3>
-                <p className="card-number">{studentsCount !== null ? studentsCount : "-"}</p>
+          </div>
+          
+          <div className="col-lg-3 col-md-6">
+            <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center">
+                  <div className="p-2 rounded" style={{ backgroundColor: '#f0fdf4' }}>
+                    <FaBoxOpen className="text-success" size={20} />
+                  </div>
+                  <div className="ms-3">
+                    <h6 className="text-muted mb-0 small">Active Products</h6>
+                    <h4 className="mb-0 fw-bold text-dark">{productsCount !== null ? productsCount.toLocaleString() : '--'}</h4>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Student List */}
+          <div className="col-lg-3 col-md-6">
+            <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center">
+                  <div className="p-2 rounded" style={{ backgroundColor: '#fefce8' }}>
+                    <FaDatabase className="text-warning" size={20} />
+                  </div>
+                  <div className="ms-3">
+                    <h6 className="text-muted mb-0 small">Total Records</h6>
+                    <h4 className="mb-0 fw-bold text-dark">
+                      {(studentsCount !== null && productsCount !== null) ? 
+                        (studentsCount + productsCount).toLocaleString() : '--'}
+                    </h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-lg-3 col-md-6">
+            <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center">
+                  <div className="p-2 rounded" style={{ backgroundColor: '#fdf2f8' }}>
+                    <FaChartBar style={{ color: '#ec4899' }} size={20} />
+                  </div>
+                  <div className="ms-3">
+                    <h6 className="text-muted mb-0 small">System Status</h6>
+                    <h4 className="mb-0 fw-bold" style={{ color: '#22c55e' }}>Active</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Section */}
+        <div className="row g-4 mb-4">
+          <div className="col-md-6">
+            <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center mb-3">
+                  <FaUsers className="text-primary me-2" size={18} />
+                  <h6 className="mb-0 fw-semibold">Student Management</h6>
+                </div>
+                <p className="text-muted small mb-3">View and manage all registered students in the system</p>
+                <button 
+                  className={`btn btn-primary w-100 ${loading.students ? 'disabled' : ''}`}
+                  onClick={fetchStudents}
+                  disabled={loading.students}
+                  style={{ borderRadius: '8px', padding: '12px' }}
+                >
+                  {loading.students ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Loading Students...
+                    </>
+                  ) : (
+                    <>
+                      <FaUsers className="me-2" size={16} />
+                      Load All Students
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6">
+            <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center mb-3">
+                  <FaBoxOpen className="text-success me-2" size={18} />
+                  <h6 className="mb-0 fw-semibold">Product Catalog</h6>
+                </div>
+                <p className="text-muted small mb-3">Browse and manage all products available for trade</p>
+                <button 
+                  className={`btn btn-success w-100 ${loading.products ? 'disabled' : ''}`}
+                  onClick={fetchProducts}
+                  disabled={loading.products}
+                  style={{ borderRadius: '8px', padding: '12px' }}
+                >
+                  {loading.products ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Loading Products...
+                    </>
+                  ) : (
+                    <>
+                      <FaBoxOpen className="me-2" size={16} />
+                      Load All Products
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Error Messages */}
+        {error.students && (
+          <div className="alert alert-danger border-0 mb-4" style={{ borderRadius: '12px', backgroundColor: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca' }}>
+            <strong>Unable to load students:</strong> {error.students}
+          </div>
+        )}
+        
+        {error.products && (
+          <div className="alert alert-danger border-0 mb-4" style={{ borderRadius: '12px', backgroundColor: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca' }}>
+            <strong>Unable to load products:</strong> {error.products}
+          </div>
+        )}
+
+        {/* Data Display Section */}
+        <div className="row g-4">
+          {/* Students List */}
           {students.length > 0 && (
-            <div className="content-section">
-              <div className="student-list">
-                <div className="list-header">
-                  <h2><FaUsers style={{ marginRight: "8px" }} /> Students</h2>
-                  <span className="list-count">{students.length} found</span>
-                </div>
-                <div className="student-grid">
-                  {students.map((student, idx) => (
-                    <div key={idx} className="student-card">
-                      <div className="student-avatar">
-                        {student.split(' ').map(n => n[0]).join('')}
+            <div className="col-lg-6">
+              <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                <div className="card-body p-0">
+                  <div className="p-4 border-bottom">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="d-flex align-items-center">
+                        <FaUsers className="text-primary me-2" size={18} />
+                        <h6 className="mb-0 fw-semibold">Registered Students</h6>
                       </div>
-                      <span className="student-name">{student}</span>
+                      <span className="badge bg-primary px-2 py-1" style={{ borderRadius: '6px' }}>{students.length}</span>
                     </div>
-                  ))}
+                  </div>
+                  <div className="p-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    <div className="row g-2">
+                      {students.map((student, idx) => (
+                        <div key={idx} className="col-12">
+                          <div className="d-flex align-items-center p-3 rounded hover-bg-light" 
+                               style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                            <div 
+                              className="d-flex align-items-center justify-content-center me-3 text-white fw-semibold"
+                              style={{ 
+                                width: '36px', 
+                                height: '36px', 
+                                backgroundColor: '#3b82f6',
+                                borderRadius: '8px',
+                                fontSize: '14px'
+                              }}
+                            >
+                              {student.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div className="flex-grow-1">
+                              <div className="fw-medium text-dark" style={{ fontSize: '14px' }}>{student}</div>
+                              <small className="text-muted">Active Student</small>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
-        </div>
 
-        {/* Right Column - Products */}
-        <div className="content-column">
-          {/* Product Action Button */}
-          <div className="actions-section">
-            <button 
-              className={`fetch-btn ${loading.products ? 'loading' : ''}`}
-              onClick={fetchProducts}
-              disabled={loading.products}
-            >
-              <FaBoxOpen style={{ marginRight: "8px" }} /> 
-              {loading.products ? "Loading..." : "Fetch Products"}
-            </button>
-          </div>
-
-          {/* Product Error Message */}
-          {error.products && (
-            <div className="error-section">
-              <div className="error-message">
-                ⚠️ Error fetching products: {error.products}
-              </div>
-            </div>
-          )}
-
-          {/* Product Statistics */}
-          <div className="stats-section">
-            <div className="info-card">
-              <div className="card-icon">
-                <FaBoxOpen size={24} />
-              </div>
-              <div className="card-content">
-                <h3>Total Products</h3>
-                <p className="card-number">{productsCount !== null ? productsCount : "-"}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Product List */}
+          {/* Products List */}
           {products.length > 0 && (
-            <div className="content-section">
-              <div className="product-list">
-                <div className="list-header">
-                  <h2><FaBoxOpen style={{ marginRight: "8px" }} /> Products</h2>
-                  <span className="list-count">{products.length} found</span>
-                </div>
-                <div className="student-grid">
-                  {products.map((product, idx) => (
-                    <div key={idx} className="student-card">
-                      <div className="student-avatar">
-                        {product.charAt(0).toUpperCase()}
+            <div className="col-lg-6">
+              <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                <div className="card-body p-0">
+                  <div className="p-4 border-bottom">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="d-flex align-items-center">
+                        <FaBoxOpen className="text-success me-2" size={18} />
+                        <h6 className="mb-0 fw-semibold">Available Products</h6>
                       </div>
-                      <span className="student-name">{product}</span>
+                      <span className="badge bg-success px-2 py-1" style={{ borderRadius: '6px' }}>{products.length}</span>
                     </div>
-                  ))}
+                  </div>
+                  <div className="p-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    <div className="row g-2">
+                      {products.map((product, idx) => (
+                        <div key={idx} className="col-12">
+                          <div className="d-flex align-items-center p-3 rounded" 
+                               style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px' }}>
+                            <div 
+                              className="d-flex align-items-center justify-content-center me-3 text-white fw-semibold"
+                              style={{ 
+                                width: '36px', 
+                                height: '36px', 
+                                backgroundColor: '#22c55e',
+                                borderRadius: '8px',
+                                fontSize: '16px'
+                              }}
+                            >
+                              {product.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-grow-1">
+                              <div className="fw-medium text-dark text-truncate" style={{ fontSize: '14px' }} title={product}>
+                                {product}
+                              </div>
+                              <small className="text-muted">Available for Trade</small>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
         </div>
+
+        {/* Empty State */}
+        {students.length === 0 && products.length === 0 && !loading.students && !loading.products && (
+          <div className="text-center py-5">
+            <div className="mb-4">
+              <div className="d-flex align-items-center justify-content-center mx-auto mb-3" 
+                   style={{ width: '80px', height: '80px', backgroundColor: '#f1f5f9', borderRadius: '16px' }}>
+                <FaDatabase className="text-muted" size={32} />
+              </div>
+              <h5 className="text-dark mb-2">No Data Loaded</h5>
+              <p className="text-muted mb-0">Use the action buttons above to load students and products data.</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
