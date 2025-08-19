@@ -1,320 +1,333 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { FaUsers, FaBoxOpen, FaSignOutAlt, FaChartBar, FaDatabase } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { LuLogOut } from "react-icons/lu";
-
-import { 
-  CheckCircle, 
-  XCircle, 
-  People, 
-  Clock, 
-  CurrencyDollar, 
-  Box 
-} from "react-bootstrap-icons";
-import { listRegisteredStudents } from "../service/StudentService";
 
 const AdminDashboard = () => {
-  const [user, setUser] = useState(null);
-  const [pendingRequests, setPendingRequests] = useState([]);
   const [students, setStudents] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [activeTab, setActiveTab] = useState("pending");
+  const [products, setProducts] = useState([]);
+  const [studentsCount, setStudentsCount] = useState(null);
+  const [productsCount, setProductsCount] = useState(null);
+  const [loading, setLoading] = useState({
+    students: false,
+    products: false
+  });
+  const [error, setError] = useState({
+    students: null,
+    products: null
+  });
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      const parsedUser = JSON.parse(userData);
-      if (parsedUser.role !== "admin") {
-        navigate("/");
-        return;
+  const fetchStudents = async () => {
+    setLoading(prev => ({ ...prev, students: true }));
+    setError(prev => ({ ...prev, students: null }));
+
+    try {
+      const response = await fetch('http://localhost:8080/api/students/getAll');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      setUser(parsedUser);
-    } else {
-      navigate("/");
-      return;
+      
+      const data = await response.json();
+      
+      const studentNames = data.map(student => 
+        `${student.firstName} ${student.lastName}`
+      );
+      
+      setStudents(studentNames);
+      setStudentsCount(data.length);
+      
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      setError(prev => ({ ...prev, students: error.message }));
+      setStudents([]);
+      setStudentsCount(0);
+    } finally {
+      setLoading(prev => ({ ...prev, students: false }));
     }
-
-    const mockPendingRequests = [
-      {
-        id: 1,
-        productName: "MacBook Air M2",
-        description: "Barely used MacBook Air with M2 chip, perfect for students",
-        status: "like-new",
-        price: "1200",
-        student: "John Smith",
-        studentEmail: "john@student.edu",
-        dateSubmitted: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=300&h=200&fit=crop"
-      },
-      {
-        id: 2,
-        productName: "Chemistry Textbook",
-        description: "Organic Chemistry 8th Edition, good condition",
-        status: "good",
-        price: "45",
-        student: "Sarah Johnson",
-        studentEmail: "sarah@student.edu",
-        dateSubmitted: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&h=200&fit=crop"
-      }
-    ];
-
-    const mockTransactions = [
-      { id: 1, productName: "iPhone 13", buyer: "John Smith", seller: "Sarah Johnson", amount: 599, date: "2024-01-20", status: "completed" },
-      { id: 2, productName: "Dell Laptop", buyer: "Mike Davis", seller: "John Smith", amount: 450, date: "2024-01-18", status: "completed" }
-    ];
-
-    setPendingRequests(mockPendingRequests);
-    setTransactions(mockTransactions);
-
-    listRegisteredStudents()
-      .then((response) => {
-        setStudents(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching students:", error);
-      });
-  }, [navigate]);
-
-  const handleApprove = (requestId) => {
-    setPendingRequests(prev => prev.filter(req => req.id !== requestId));
-    toast.success("The listing has been approved and is now live.");
   };
 
-  const handleDecline = (requestId) => {
-    setPendingRequests(prev => prev.filter(req => req.id !== requestId));
-    toast.error("The listing has been declined and removed.");
+  const fetchProducts = async () => {
+    setLoading(prev => ({ ...prev, products: true }));
+    setError(prev => ({ ...prev, products: null }));
+
+    try {
+      const response = await fetch('http://localhost:8080/api/product/getAllProducts');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      const productNames = data.map(product => product.productName);
+      
+      setProducts(productNames);
+      setProductsCount(data.length);
+      
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setError(prev => ({ ...prev, products: error.message }));
+      setProducts([]);
+      setProductsCount(0);
+    } finally {
+      setLoading(prev => ({ ...prev, products: false }));
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/");
+    navigate("/login");
   };
 
-  if (!user) return null;
-
   return (
-    <div className="min-vh-100 bg-light">
-      <div className="container py-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <div>
-            <h1 className="h2 mb-1">Admin Dashboard</h1>
-            <p className="text-muted mb-0">Welcome back, {user?.name}</p>
-          </div>
-          <button 
-            className="btn btn-outline-secondary"
-            onClick={handleLogout}
-          >
-            <LuLogOut className="me-2" size={16} />
-            Logout
-          </button>
-        </div>
-
-        <div className="row mb-4 g-3">
-          <div className="col-md-3">
-            <div className="card h-100 text-center">
-              <div className="card-body">
-                <Clock className="text-warning mb-2" size={32} />
-                <div className="h4 text-warning">{pendingRequests.length}</div>
-                <div className="text-muted">Pending Requests</div>
+    <div className="min-vh-100" style={{ backgroundColor: '#f8fafc' }}>
+      {/* Header */}
+      <div className="border-bottom bg-white shadow-sm">
+        <div className="container-fluid px-4 py-3">
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center justify-content-center me-3" 
+                   style={{ width: '40px', height: '40px', backgroundColor: '#3b82f6', borderRadius: '8px' }}>
+                <FaChartBar className="text-white" size={20} />
+              </div>
+              <div>
+                <h5 className="mb-0 text-dark fw-semibold">Admin Dashboard</h5>
+                <small className="text-muted">Student Trade Management</small>
               </div>
             </div>
-          </div>
-          <div className="col-md-3">
-            <div className="card h-100 text-center">
-              <div className="card-body">
-                <People className="text-primary mb-2" size={32} />
-                <div className="h4 text-primary">{students.length}</div>
-                <div className="text-muted">Active Students</div>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="card h-100 text-center">
-              <div className="card-body">
-                <Box className="text-success mb-2" size={32} />
-                <div className="h4 text-success">{transactions.length}</div>
-                <div className="text-muted">Total Transactions</div>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="card h-100 text-center">
-              <div className="card-body">
-                <CurrencyDollar className="text-purple mb-2" size={32} />
-                <div className="h4 text-purple">
-                  ${transactions.reduce((sum, t) => sum + t.amount, 0)}
-                </div>
-                <div className="text-muted">Total Volume</div>
-              </div>
-            </div>
+            <button 
+              className="btn btn-outline-secondary"
+              onClick={handleLogout}
+              style={{ borderRadius: '8px' }}
+            >
+              <FaSignOutAlt className="me-2" size={14} />
+              Sign Out
+            </button>
           </div>
         </div>
+      </div>
 
-        <ul className="nav nav-tabs mb-4">
-          <li className="nav-item">
-            <button 
-              className={`nav-link ${activeTab === "pending" ? "active" : ""}`}
-              onClick={() => setActiveTab("pending")}
-            >
-              Pending Requests
-            </button>
-          </li>
-          <li className="nav-item">
-            <button 
-              className={`nav-link ${activeTab === "students" ? "active" : ""}`}
-              onClick={() => setActiveTab("students")}
-            >
-              Students
-            </button>
-          </li>
-          <li className="nav-item">
-            <button 
-              className={`nav-link ${activeTab === "transactions" ? "active" : ""}`}
-              onClick={() => setActiveTab("transactions")}
-            >
-              Transactions
-            </button>
-          </li>
-        </ul>
-
-        {activeTab === "pending" && (
-          <div>
-            <h3 className="h4 mb-3">Pending Listing Requests</h3>
-            {pendingRequests.length === 0 ? (
-              <div className="card">
-                <div className="card-body text-center py-5">
-                  <Clock className="text-muted mb-3" size={48} />
-                  <p className="text-muted">No pending requests</p>
+      <div className="container-fluid px-4 py-4">
+        {/* Statistics Overview - Updated to 2 columns */}
+        <div className="row g-3 mb-4">
+          <div className="col-lg-6 col-md-6">
+            <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center">
+                  <div className="p-2 rounded" style={{ backgroundColor: '#eff6ff' }}>
+                    <FaUsers className="text-primary" size={20} />
+                  </div>
+                  <div className="ms-3">
+                    <h6 className="text-muted mb-0 small">Total Students</h6>
+                    <h4 className="mb-0 fw-bold text-dark">{studentsCount !== null ? studentsCount.toLocaleString() : '--'}</h4>
+                  </div>
                 </div>
               </div>
-            ) : (
-              pendingRequests.map((request) => (
-                <div className="card mb-3" key={request.id}>
-                  <div className="card-body">
-                    <div className="d-flex gap-3">
-                      {request.image && (
-                        <img
-                          src={request.image}
-                          alt={request.productName}
-                          className="rounded"
-                          style={{ width: "96px", height: "96px", objectFit: "cover" }}
-                        />
-                      )}
-                      <div className="flex-grow-1">
-                        <div className="d-flex justify-content-between mb-2">
-                          <h4 className="h5 mb-0">{request.productName}</h4>
-                          <div className="text-end">
-                            <div className="h5 text-success mb-1">${request.price}</div>
-                            <span className={`badge bg-warning-subtle text-warning-emphasis text-capitalize`}>
-                              {request.status.replace("-", " ")}
-                            </span>
+            </div>
+          </div>
+          
+          <div className="col-lg-6 col-md-6">
+            <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center">
+                  <div className="p-2 rounded" style={{ backgroundColor: '#f0fdf4' }}>
+                    <FaBoxOpen className="text-success" size={20} />
+                  </div>
+                  <div className="ms-3">
+                    <h6 className="text-muted mb-0 small">Number of Products</h6>
+                    <h4 className="mb-0 fw-bold text-dark">{productsCount !== null ? productsCount.toLocaleString() : '--'}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Section */}
+        <div className="row g-4 mb-4">
+          <div className="col-md-6">
+            <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center mb-3">
+                  <FaUsers className="text-primary me-2" size={18} />
+                  <h6 className="mb-0 fw-semibold">Student Management</h6>
+                </div>
+                <p className="text-muted small mb-3">View and manage all registered students in the system</p>
+                <button 
+                  className={`btn btn-primary w-100 ${loading.students ? 'disabled' : ''}`}
+                  onClick={fetchStudents}
+                  disabled={loading.students}
+                  style={{ borderRadius: '8px', padding: '12px' }}
+                >
+                  {loading.students ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Loading Students...
+                    </>
+                  ) : (
+                    <>
+                      <FaUsers className="me-2" size={16} />
+                      Load All Students
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6">
+            <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className="card-body p-4">
+                <div className="d-flex align-items-center mb-3">
+                  <FaBoxOpen className="text-success me-2" size={18} />
+                  <h6 className="mb-0 fw-semibold">Product Catalog</h6>
+                </div>
+                <p className="text-muted small mb-3">Browse and manage all products available for trade</p>
+                <button 
+                  className={`btn btn-success w-100 ${loading.products ? 'disabled' : ''}`}
+                  onClick={fetchProducts}
+                  disabled={loading.products}
+                  style={{ borderRadius: '8px', padding: '12px' }}
+                >
+                  {loading.products ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Loading Products...
+                    </>
+                  ) : (
+                    <>
+                      <FaBoxOpen className="me-2" size={16} />
+                      Load All Products
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Error Messages */}
+        {error.students && (
+          <div className="alert alert-danger border-0 mb-4" style={{ borderRadius: '12px', backgroundColor: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca' }}>
+            <strong>Unable to load students:</strong> {error.students}
+          </div>
+        )}
+        
+        {error.products && (
+          <div className="alert alert-danger border-0 mb-4" style={{ borderRadius: '12px', backgroundColor: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca' }}>
+            <strong>Unable to load products:</strong> {error.products}
+          </div>
+        )}
+
+        {/* Data Display Section */}
+        <div className="row g-4">
+          {/* Students List */}
+          {students.length > 0 && (
+            <div className="col-lg-6">
+              <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                <div className="card-body p-0">
+                  <div className="p-4 border-bottom">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="d-flex align-items-center">
+                        <FaUsers className="text-primary me-2" size={18} />
+                        <h6 className="mb-0 fw-semibold">Registered Students</h6>
+                      </div>
+                      <span className="badge bg-primary px-2 py-1" style={{ borderRadius: '6px' }}>{students.length}</span>
+                    </div>
+                  </div>
+                  <div className="p-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    <div className="row g-2">
+                      {students.map((student, idx) => (
+                        <div key={idx} className="col-12">
+                          <div className="d-flex align-items-center p-3 rounded hover-bg-light" 
+                               style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                            <div 
+                              className="d-flex align-items-center justify-content-center me-3 text-white fw-semibold"
+                              style={{ 
+                                width: '36px', 
+                                height: '36px', 
+                                backgroundColor: '#3b82f6',
+                                borderRadius: '8px',
+                                fontSize: '14px'
+                              }}
+                            >
+                              {student.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div className="flex-grow-1">
+                              <div className="fw-medium text-dark" style={{ fontSize: '14px' }}>{student}</div>
+                              <small className="text-muted">Active Student</small>
+                            </div>
                           </div>
                         </div>
-                        <p className="text-muted mb-2">{request.description}</p>
-                        <div className="small text-muted mb-3">
-                          <p className="mb-1">Submitted by: {request.student} ({request.studentEmail})</p>
-                          <p className="mb-0">Date: {new Date(request.dateSubmitted).toLocaleDateString()}</p>
-                        </div>
-                        <div className="d-flex gap-2">
-                          <button
-                            className="btn btn-success"
-                            onClick={() => handleApprove(request.id)}
-                          >
-                            <CheckCircle className="me-2" size={16} />
-                            Approve
-                          </button>
-                          <button
-                            className="btn btn-danger"
-                            onClick={() => handleDecline(request.id)}
-                          >
-                            <XCircle className="me-2" size={16} />
-                            Decline
-                          </button>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        )}
+              </div>
+            </div>
+          )}
 
-        {activeTab === "students" && (
-          <div>
-            <h3 className="h4 mb-3">Student Management</h3>
-            <div className="card">
-              <div className="card-body p-0">
-                <div className="table-responsive">
-                  <table className="table table-hover mb-0">
-                    <thead>
-                      <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Residence</th>
-                        <th>Sales</th>
-                        <th>Purchases</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {students.map((student) => (
-                        <tr key={student.studentId}>
-                          <td>{student.firstName}</td>
-                          <td>{student.lastName}</td>
-                          <td>{student.email}</td>
-                          <td>{student.residence?.residenceName || "N/A"}</td>
-                          <td>{student.productForSale?.length || 0}</td>
-                          <td>{student.purchases?.length || 0}</td>
-                        </tr>
+          {/* Products List */}
+          {products.length > 0 && (
+            <div className="col-lg-6">
+              <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                <div className="card-body p-0">
+                  <div className="p-4 border-bottom">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="d-flex align-items-center">
+                        <FaBoxOpen className="text-success me-2" size={18} />
+                        <h6 className="mb-0 fw-semibold">Available Products</h6>
+                      </div>
+                      <span className="badge bg-success px-2 py-1" style={{ borderRadius: '6px' }}>{products.length}</span>
+                    </div>
+                  </div>
+                  <div className="p-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    <div className="row g-2">
+                      {products.map((product, idx) => (
+                        <div key={idx} className="col-12">
+                          <div className="d-flex align-items-center p-3 rounded" 
+                               style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px' }}>
+                            <div 
+                              className="d-flex align-items-center justify-content-center me-3 text-white fw-semibold"
+                              style={{ 
+                                width: '36px', 
+                                height: '36px', 
+                                backgroundColor: '#22c55e',
+                                borderRadius: '8px',
+                                fontSize: '16px'
+                              }}
+                            >
+                              {product.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-grow-1">
+                              <div className="fw-medium text-dark text-truncate" style={{ fontSize: '14px' }} title={product}>
+                                {product}
+                              </div>
+                              <small className="text-muted">Available for Trade</small>
+                            </div>
+                          </div>
+                        </div>
                       ))}
-                    </tbody>
-                  </table>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {activeTab === "transactions" && (
-          <div>
-            <h3 className="h4 mb-3">Transaction History</h3>
-            <div className="card">
-              <div className="card-body p-0">
-                <div className="table-responsive">
-                  <table className="table table-hover mb-0">
-                    <thead>
-                      <tr>
-                        <th>Product</th>
-                        <th>Buyer</th>
-                        <th>Seller</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {transactions.map((transaction) => (
-                        <tr key={transaction.id}>
-                          <td>{transaction.productName}</td>
-                          <td>{transaction.buyer}</td>
-                          <td>{transaction.seller}</td>
-                          <td>${transaction.amount}</td>
-                          <td>{new Date(transaction.date).toLocaleDateString()}</td>
-                          <td>
-                            <span className="badge bg-success-subtle text-success-emphasis text-capitalize">
-                              {transaction.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+        {/* Empty State */}
+        {students.length === 0 && products.length === 0 && !loading.students && !loading.products && (
+          <div className="text-center py-5">
+            <div className="mb-4">
+              <div className="d-flex align-items-center justify-content-center mx-auto mb-3" 
+                   style={{ width: '80px', height: '80px', backgroundColor: '#f1f5f9', borderRadius: '16px' }}>
+                <FaDatabase className="text-muted" size={32} />
               </div>
+              <h5 className="text-dark mb-2">No Data Loaded</h5>
+              <p className="text-muted mb-0">Use the action buttons above to load students and products data.</p>
             </div>
           </div>
         )}

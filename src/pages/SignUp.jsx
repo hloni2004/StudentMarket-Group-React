@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { IoEyeOutline } from "react-icons/io5";
+import { FiEyeOff } from "react-icons/fi";
+
 import { captureStudentDetails } from '../service/StudentService';
 
 const SignUp = () => {
@@ -22,12 +25,50 @@ const SignUp = () => {
     building: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+
+  const residenceAddresses = {
+    "President House": {
+      streetNumber: "22",
+      streetName: "Barrack Street",
+      suburb: "Cape Town City Center",
+      city: "Cape Town",
+      province: "Western Cape",
+      postalCode: "8001"
+    },
+    "New Market Junction": {
+      streetNumber: "45",
+      streetName: "New Market Street",
+      suburb: "Woodstock",
+      city: "Cape Town",
+      province: "Western Cape",
+      postalCode: "8005"
+    },
+    "Plein House": {
+      streetNumber: "10",
+      streetName: "Plein Street",
+      suburb: "Central",
+      city: "Cape Town",
+      province: "Western Cape",
+      postalCode: "8001"
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleResidenceChange = (residenceName) => {
+    const addressInfo = residenceAddresses[residenceName];
+    setFormData(prev => ({
+      ...prev,
+      residenceName,
+      ...addressInfo
     }));
   };
 
@@ -138,117 +179,45 @@ const SignUp = () => {
 
             <div className="mb-3">
               <label htmlFor="password" className="form-label">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                className="form-control"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-              />
+              <div className="input-group">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="form-control"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FiEyeOff size={16} /> : <IoEyeOutline size={16} />}
+                </button>
+              </div>
             </div>
 
             <div className="mb-4">
               <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                className="form-control"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            {/* Address Information */}
-            <div className="mb-4">
-              <h5 className="mb-3">Address Information</h5>
-              <div className="row mb-3">
-                <div className="col-md-6 mb-3 mb-md-0">
-                  <label htmlFor="streetNumber" className="form-label">Street Number</label>
-                  <input
-                    id="streetNumber"
-                    name="streetNumber"
-                    type="text"
-                    className="form-control"
-                    placeholder="123"
-                    value={formData.streetNumber}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label htmlFor="streetName" className="form-label">Street Name</label>
-                  <input
-                    id="streetName"
-                    name="streetName"
-                    type="text"
-                    className="form-control"
-                    placeholder="Main Street"
-                    value={formData.streetName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="suburb" className="form-label">Suburb</label>
+              <div className="input-group">
                 <input
-                  id="suburb"
-                  name="suburb"
-                  type="text"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
                   className="form-control"
-                  placeholder="Suburb"
-                  value={formData.suburb}
+                  value={formData.confirmPassword}
                   onChange={handleInputChange}
                   required
                 />
-              </div>
-
-              <div className="row mb-3">
-                <div className="col-md-6 mb-3 mb-md-0">
-                  <label htmlFor="city" className="form-label">City</label>
-                  <input
-                    id="city"
-                    name="city"
-                    type="text"
-                    className="form-control"
-                    placeholder="Cape Town"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label htmlFor="province" className="form-label">Province</label>
-                  <input
-                    id="province"
-                    name="province"
-                    type="text"
-                    className="form-control"
-                    placeholder="Western Cape"
-                    value={formData.province}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="postalCode" className="form-label">Postal Code</label>
-                <input
-                  id="postalCode"
-                  name="postalCode"
-                  type="text"
-                  className="form-control"
-                  placeholder="8001"
-                  value={formData.postalCode}
-                  onChange={handleInputChange}
-                  required
-                />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <FiEyeOff size={16} /> : <IoEyeOutline size={16} />}
+                </button>
               </div>
             </div>
 
@@ -257,18 +226,17 @@ const SignUp = () => {
               <h5 className="mb-3">Residence Information</h5>
               <div className="mb-3">
                 <label htmlFor="residenceName" className="form-label">Residence Name</label>
-                <input
-                  id="residenceName"
-                  name="residenceName"
-                  type="text"
-                  className="form-control"
-                  placeholder="Student Village"
-                  value={formData.residenceName}
-                  onChange={handleInputChange}
+                <select
+                  className="form-select"
+                  onChange={(e) => handleResidenceChange(e.target.value)}
                   required
-                />
+                >
+                  <option value="">Select a residence</option>
+                  <option value="President House">President House</option>
+                  <option value="New Market Junction">New Market Junction</option>
+                  <option value="Plein House">Plein House</option>
+                </select>
               </div>
-
               <div className="row mb-3">
                 <div className="col-md-6 mb-3 mb-md-0">
                   <label htmlFor="roomNumber" className="form-label">Room Number</label>
@@ -297,7 +265,6 @@ const SignUp = () => {
                   />
                 </div>
               </div>
-
               <div className="mb-3">
                 <label htmlFor="building" className="form-label">Building</label>
                 <input
@@ -308,6 +275,99 @@ const SignUp = () => {
                   placeholder="Building A"
                   value={formData.building}
                   onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Address Information */}
+            <div className="mb-4">
+              <h5 className="mb-3">Address Information</h5>
+              <div className="row mb-3">
+                <div className="col-md-6 mb-3 mb-md-0">
+                  <label htmlFor="streetNumber" className="form-label">Street Number</label>
+                  <input
+                    id="streetNumber"
+                    name="streetNumber"
+                    type="text"
+                    className="form-control bg-light"
+                    placeholder="123"
+                    value={formData.streetNumber}
+                    onChange={handleInputChange}
+                    readOnly
+                    required
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label htmlFor="streetName" className="form-label">Street Name</label>
+                  <input
+                    id="streetName"
+                    name="streetName"
+                    type="text"
+                    className="form-control bg-light"
+                    placeholder="Main Street"
+                    value={formData.streetName}
+                    onChange={handleInputChange}
+                    readOnly
+                    required
+                  />
+                </div>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="suburb" className="form-label">Suburb</label>
+                <input
+                  id="suburb"
+                  name="suburb"
+                  type="text"
+                  className="form-control bg-light"
+                  placeholder="Suburb"
+                  value={formData.suburb}
+                  onChange={handleInputChange}
+                  readOnly
+                  required
+                />
+              </div>
+              <div className="row mb-3">
+                <div className="col-md-6 mb-3 mb-md-0">
+                  <label htmlFor="city" className="form-label">City</label>
+                  <input
+                    id="city"
+                    name="city"
+                    type="text"
+                    className="form-control bg-light"
+                    placeholder="Cape Town"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    readOnly
+                    required
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label htmlFor="province" className="form-label">Province</label>
+                  <input
+                    id="province"
+                    name="province"
+                    type="text"
+                    className="form-control bg-light"
+                    placeholder="Western Cape"
+                    value={formData.province}
+                    onChange={handleInputChange}
+                    readOnly
+                    required
+                  />
+                </div>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="postalCode" className="form-label">Postal Code</label>
+                <input
+                  id="postalCode"
+                  name="postalCode"
+                  type="text"
+                  className="form-control bg-light"
+                  placeholder="8001"
+                  value={formData.postalCode}
+                  onChange={handleInputChange}
+                  readOnly
                   required
                 />
               </div>
@@ -326,7 +386,6 @@ const SignUp = () => {
               ) : "Create Account"}
             </button>
           </form>
-
           <div className="mt-4 text-center">
             <p className="text-muted">
               Already have an account?{" "}
