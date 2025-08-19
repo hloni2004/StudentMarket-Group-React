@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaUsers, FaBoxOpen, FaSignOutAlt, FaChartBar, FaDatabase } from "react-icons/fa";
+import { FaUsers, FaBoxOpen, FaSignOutAlt, FaChartBar, FaDatabase, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
@@ -61,9 +61,8 @@ const AdminDashboard = () => {
       
       const data = await response.json();
       
-      const productNames = data.map(product => product.productName);
-      
-      setProducts(productNames);
+      // Store full product data including seller information
+      setProducts(data);
       setProductsCount(data.length);
       
     } catch (error) {
@@ -79,6 +78,37 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/login");
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-ZA', {
+      style: 'currency',
+      currency: 'ZAR'
+    }).format(price);
+  };
+
+  const getConditionColor = (condition) => {
+    switch (condition?.toLowerCase()) {
+      case 'new': return '#22c55e';
+      case 'like new': return '#3b82f6';
+      case 'good': return '#06b6d4';
+      case 'fair': return '#f59e0b';
+      case 'poor': return '#ef4444';
+      default: return '#6b7280';
+    }
+  };
+
+  const getCategoryEmoji = (category) => {
+    switch (category?.toLowerCase()) {
+      case 'electronics': return '📱';
+      case 'books': return '📚';
+      case 'clothing': return '👕';
+      case 'furniture': return '🪑';
+      case 'sports': return '⚽';
+      case 'laptop': return '💻';
+      case 'speaker': return '🔊';
+      default: return '📦';
+    }
   };
 
   return (
@@ -110,7 +140,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="container-fluid px-4 py-4">
-        {/* Statistics Overview - Updated to 2 columns */}
+        {/* Statistics Overview */}
         <div className="row g-3 mb-4">
           <div className="col-lg-6 col-md-6">
             <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
@@ -169,7 +199,7 @@ const AdminDashboard = () => {
                   ) : (
                     <>
                       <FaUsers className="me-2" size={16} />
-                      Refresh
+                      Load All Students
                     </>
                   )}
                 </button>
@@ -182,9 +212,9 @@ const AdminDashboard = () => {
               <div className="card-body p-4">
                 <div className="d-flex align-items-center mb-3">
                   <FaBoxOpen className="text-primary me-2" size={18} />
-                  <h6 className="mb-0 fw-semibold">Avaiable Product</h6>
+                  <h6 className="mb-0 fw-semibold">Product & Owner Management</h6>
                 </div>
-                <p className="text-muted small mb-3">Browse and manage all products available for trade</p>
+                <p className="text-muted small mb-3">Browse all products with their owner information</p>
                 <button 
                   className={`btn btn-primary w-100 ${loading.products ? 'disabled' : ''}`}
                   onClick={fetchProducts}
@@ -199,7 +229,7 @@ const AdminDashboard = () => {
                   ) : (
                     <>
                       <FaBoxOpen className="me-2" size={16} />
-                      Load All Products
+                      Load Products & Owners
                     </>
                   )}
                 </button>
@@ -269,7 +299,7 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* Products List */}
+          {/* Products with Owner Information */}
           {products.length > 0 && (
             <div className="col-lg-6">
               <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
@@ -278,34 +308,127 @@ const AdminDashboard = () => {
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex align-items-center">
                         <FaBoxOpen className="text-primary me-2" size={18} />
-                        <h6 className="mb-0 fw-semibold">Available Products</h6>
+                        <h6 className="mb-0 fw-semibold">Products & Owners</h6>
                       </div>
                       <span className="badge bg-primary px-2 py-1" style={{ borderRadius: '6px' }}>{products.length}</span>
                     </div>
                   </div>
-                  <div className="p-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                    <div className="row g-2">
+                  <div className="p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                    <div className="row g-3">
                       {products.map((product, idx) => (
                         <div key={idx} className="col-12">
-                          <div className="d-flex align-items-center p-3 rounded" 
-                               style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px' }}>
-                            <div 
-                              className="d-flex align-items-center justify-content-center me-3 text-white fw-semibold"
-                              style={{ 
-                                width: '36px', 
-                                height: '36px', 
-                                backgroundColor: '#3b82f6',
-                                borderRadius: '8px',
-                                fontSize: '16px'
-                              }}
-                            >
-                              {product.charAt(0).toUpperCase()}
-                            </div>
-                            <div className="flex-grow-1">
-                              <div className="fw-medium text-dark text-truncate" style={{ fontSize: '14px' }} title={product}>
-                                {product}
+                          <div className="card border-0" 
+                               style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px' }}>
+                            <div className="card-body p-3">
+                              {/* Product Header */}
+                              <div className="d-flex align-items-start justify-content-between mb-3">
+                                <div className="d-flex align-items-center">
+                                  <div 
+                                    className="d-flex align-items-center justify-content-center me-3"
+                                    style={{ 
+                                      width: '40px', 
+                                      height: '40px', 
+                                      backgroundColor: '#3b82f6',
+                                      borderRadius: '8px',
+                                      fontSize: '16px'
+                                    }}
+                                  >
+                                    <span style={{ fontSize: '18px' }}>
+                                      {product.productCategory === 'Electronics' ? '📱' :
+                                       product.productCategory === 'Books' ? '📚' :
+                                       product.productCategory === 'Laptop' ? '💻' :
+                                       product.productCategory === 'Speaker' ? '🔊' :
+                                       product.productCategory === 'Clothing' ? '👕' : '📦'}
+                                    </span>
+                                  </div>
+                                  <div className="flex-grow-1">
+                                    <h6 className="mb-1 fw-semibold text-dark" style={{ fontSize: '14px' }}>
+                                      {product.productName}
+                                    </h6>
+                                    <div className="d-flex align-items-center gap-2 mb-1">
+                                      <span 
+                                        className="badge px-2 py-1 text-white" 
+                                        style={{ 
+                                          backgroundColor: getConditionColor(product.condition),
+                                          fontSize: '11px',
+                                          borderRadius: '4px'
+                                        }}
+                                      >
+                                        {product.condition}
+                                      </span>
+                                      <span className="text-primary fw-semibold" style={{ fontSize: '13px' }}>
+                                        {formatPrice(product.price)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="text-end">
+                                  <span 
+                                    className={`badge px-2 py-1 ${product.availabilityStatus ? 'bg-success' : 'bg-secondary'}`}
+                                    style={{ fontSize: '10px', borderRadius: '4px' }}
+                                  >
+                                    {product.availabilityStatus ? 'Available' : 'Sold'}
+                                  </span>
+                                </div>
                               </div>
-                              <small className="text-muted">Available for Trade</small>
+
+                              {/* Product Description */}
+                              {product.productDescription && (
+                                <div className="mb-3">
+                                  <p className="text-muted small mb-0" style={{ fontSize: '12px', lineHeight: '1.4' }}>
+                                    {product.productDescription.length > 80 
+                                      ? `${product.productDescription.substring(0, 80)}...` 
+                                      : product.productDescription}
+                                  </p>
+                                </div>
+                              )}
+
+                              {/* Owner Information */}
+                              <div className="border-top pt-3">
+                                <div className="d-flex align-items-center">
+                                  <div className="d-flex align-items-center">
+                                    <FaUser className="text-muted me-2" size={12} />
+                                    <small className="text-muted me-2">Owned by:</small>
+                                  </div>
+                                  <div className="d-flex align-items-center">
+                                    {product.seller ? (
+                                      <>
+                                        <div 
+                                          className="d-flex align-items-center justify-content-center me-2 text-white fw-semibold"
+                                          style={{ 
+                                            width: '24px', 
+                                            height: '24px', 
+                                            backgroundColor: '#6366f1',
+                                            borderRadius: '6px',
+                                            fontSize: '10px'
+                                          }}
+                                        >
+                                          {`${product.seller.firstName?.[0] || ''}${product.seller.lastName?.[0] || ''}`}
+                                        </div>
+                                        <div>
+                                          <span className="fw-medium text-dark" style={{ fontSize: '13px' }}>
+                                            {product.seller.firstName} {product.seller.lastName}
+                                          </span>
+                                          <div style={{ fontSize: '11px' }} className="text-muted">
+                                            {product.seller.email}
+                                          </div>
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <span className="text-muted" style={{ fontSize: '12px' }}>
+                                        Owner information not available
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Product Category */}
+                              <div className="mt-2">
+                                <small className="text-muted">
+                                  Category: <span className="text-dark fw-medium">{product.productCategory}</span>
+                                </small>
+                              </div>
                             </div>
                           </div>
                         </div>
