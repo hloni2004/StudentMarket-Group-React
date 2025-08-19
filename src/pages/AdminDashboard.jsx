@@ -23,7 +23,7 @@ const AdminDashboard = () => {
     setError(prev => ({ ...prev, students: null }));
 
     try {
-      const response = await fetch('http://localhost:8080/api/students/getAll');
+      const response = await fetch('http://localhost:8080/api/student/getAll');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -120,7 +120,7 @@ const AdminDashboard = () => {
                     <FaUsers className="text-primary" size={20} />
                   </div>
                   <div className="ms-3">
-                    <h6 className="text-muted mb-0 small">Total Students</h6>
+                    <h6 className="text-muted mb-0 small">Active Students</h6>
                     <h4 className="mb-0 fw-bold text-dark">{studentsCount !== null ? studentsCount.toLocaleString() : '--'}</h4>
                   </div>
                 </div>
@@ -132,8 +132,8 @@ const AdminDashboard = () => {
             <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
               <div className="card-body p-4">
                 <div className="d-flex align-items-center">
-                  <div className="p-2 rounded" style={{ backgroundColor: '#f0fdf4' }}>
-                    <FaBoxOpen className="text-success" size={20} />
+                  <div className="p-2 rounded" style={{ backgroundColor: '#eff6ff' }}>
+                    <FaBoxOpen className="text-primary" size={20} />
                   </div>
                   <div className="ms-3">
                     <h6 className="text-muted mb-0 small">Number of Products</h6>
@@ -169,7 +169,7 @@ const AdminDashboard = () => {
                   ) : (
                     <>
                       <FaUsers className="me-2" size={16} />
-                      Load All Students
+                      Refresh
                     </>
                   )}
                 </button>
@@ -181,12 +181,12 @@ const AdminDashboard = () => {
             <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
               <div className="card-body p-4">
                 <div className="d-flex align-items-center mb-3">
-                  <FaBoxOpen className="text-success me-2" size={18} />
-                  <h6 className="mb-0 fw-semibold">Product Catalog</h6>
+                  <FaBoxOpen className="text-primary me-2" size={18} />
+                  <h6 className="mb-0 fw-semibold">Avaiable Product</h6>
                 </div>
                 <p className="text-muted small mb-3">Browse and manage all products available for trade</p>
                 <button 
-                  className={`btn btn-success w-100 ${loading.products ? 'disabled' : ''}`}
+                  className={`btn btn-primary w-100 ${loading.products ? 'disabled' : ''}`}
                   onClick={fetchProducts}
                   disabled={loading.products}
                   style={{ borderRadius: '8px', padding: '12px' }}
@@ -232,7 +232,7 @@ const AdminDashboard = () => {
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex align-items-center">
                         <FaUsers className="text-primary me-2" size={18} />
-                        <h6 className="mb-0 fw-semibold">Registered Students</h6>
+                        <h6 className="mb-0 fw-semibold">Active Students</h6>
                       </div>
                       <span className="badge bg-primary px-2 py-1" style={{ borderRadius: '6px' }}>{students.length}</span>
                     </div>
@@ -277,10 +277,10 @@ const AdminDashboard = () => {
                   <div className="p-4 border-bottom">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex align-items-center">
-                        <FaBoxOpen className="text-success me-2" size={18} />
+                        <FaBoxOpen className="text-primary me-2" size={18} />
                         <h6 className="mb-0 fw-semibold">Available Products</h6>
                       </div>
-                      <span className="badge bg-success px-2 py-1" style={{ borderRadius: '6px' }}>{products.length}</span>
+                      <span className="badge bg-primary px-2 py-1" style={{ borderRadius: '6px' }}>{products.length}</span>
                     </div>
                   </div>
                   <div className="p-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
@@ -288,13 +288,13 @@ const AdminDashboard = () => {
                       {products.map((product, idx) => (
                         <div key={idx} className="col-12">
                           <div className="d-flex align-items-center p-3 rounded" 
-                               style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px' }}>
+                               style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px' }}>
                             <div 
                               className="d-flex align-items-center justify-content-center me-3 text-white fw-semibold"
                               style={{ 
                                 width: '36px', 
                                 height: '36px', 
-                                backgroundColor: '#22c55e',
+                                backgroundColor: '#3b82f6',
                                 borderRadius: '8px',
                                 fontSize: '16px'
                               }}
