@@ -199,7 +199,7 @@ const AdminDashboard = () => {
                   ) : (
                     <>
                       <FaUsers className="me-2" size={16} />
-                      Load All Students
+                      Refresh
                     </>
                   )}
                 </button>
@@ -229,7 +229,7 @@ const AdminDashboard = () => {
                   ) : (
                     <>
                       <FaBoxOpen className="me-2" size={16} />
-                      Load Products & Owners
+                      Refresh
                     </>
                   )}
                 </button>
