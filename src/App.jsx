@@ -14,6 +14,8 @@ import Transaction from "./pages/Transaction";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const queryClient = new QueryClient();
 
@@ -22,11 +24,11 @@ const App = () => (
     <ToastContainer />
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<RoleSelection />} />
+      
+      {/*<Route path="/" element={<RoleSelection />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
-
-        <Route path="/home" element={<Home />} />
+         <Route path="/" element={<Home />} /> 
         <Route path="/sell" element={<Sell />} />
         <Route path="/pending" element={<Pending />} />
         <Route path="/buy" element={<Buy />} />
@@ -34,6 +36,7 @@ const App = () => (
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
+
       </Routes>
     </BrowserRouter>
   </QueryClientProvider>
