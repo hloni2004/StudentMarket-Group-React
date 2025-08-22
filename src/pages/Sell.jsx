@@ -39,10 +39,20 @@ const Sell = () => {
     setIsLoading(true);
 
     try {
+      const storedUser = localStorage.getItem("loggedInUser");
+      const loggedInUser = storedUser ? JSON.parse(storedUser) : null;
+
+      if (!loggedInUser || !loggedInUser.studentId) {
+        setIsLoading(false);
+        toast.error("You must login first before selling a product.");
+        navigate("/")
+        return;
+      }
+
       const { productName, description, condition, category, price, image } = formData;
 
       if (productName && description && condition && category && price) {
-       
+
         const productData = {
           productName,
           productDescription: description,
