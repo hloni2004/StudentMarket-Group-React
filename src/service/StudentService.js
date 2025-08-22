@@ -10,7 +10,7 @@ export const captureStudentDetails = (student) => {
 
 //get all student for administrator: Student mangement
 export const listRegisteredStudents = () => {
-    return axios.get(REST_API_BASE_URL + '/student/getAllStudent');
+    return axios.get(REST_API_BASE_URL + '/student/getAll');
 }
 
 // Login function - authenticate student/admin
