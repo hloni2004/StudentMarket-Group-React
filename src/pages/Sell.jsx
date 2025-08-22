@@ -45,6 +45,7 @@ const Sell = () => {
       if (!loggedInUser || !loggedInUser.studentId) {
         setIsLoading(false);
         toast.error("You must login first before selling a product.");
+        navigate("/")
         return;
       }
 
