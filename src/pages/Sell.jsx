@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ArrowLeft, Upload } from "react-bootstrap-icons";
-import { capturedProductDetails } from "../service/ProductService"; // adjust path if needed
+import { capturedProductDetails } from "../service/ProductService";
 
 const Sell = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +11,7 @@ const Sell = () => {
     condition: "",
     category: "",
     price: "",
-    image: null, // single image file
+    image: null,
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -42,19 +42,19 @@ const Sell = () => {
       const { productName, description, condition, category, price, image } = formData;
 
       if (productName && description && condition && category && price) {
-        // Build product object
+       
         const productData = {
           productName,
           productDescription: description,
           condition,
           productCategory: category,
           price,
-          availabilityStatus: true, // default available
-          releaseDate: new Date().toISOString().split("T")[0], // today’s date (yyyy-mm-dd)
+          availabilityStatus: true, 
+          releaseDate: new Date().toISOString().split("T")[0], 
           seller: { studentId: loggedInUser.studentId }
         };
 
-        // Prepare multipart form
+        
         const formDataToSend = new FormData();
         formDataToSend.append(
           "product",
@@ -62,10 +62,10 @@ const Sell = () => {
         );
 
         if (image) {
-          formDataToSend.append("productImage", image); // matches backend param name
+          formDataToSend.append("productImage", image); 
         }
 
-        // API call
+       
         await capturedProductDetails(formDataToSend);
 
         toast.success("Your item has been submitted for approval!");
@@ -109,7 +109,7 @@ const Sell = () => {
           </div>
           <div className="card-body">
             <form onSubmit={handleSubmit}>
-              {/* Product Name */}
+
               <div className="mb-3">
                 <label htmlFor="productName" className="form-label">
                   Product Name *
@@ -126,7 +126,6 @@ const Sell = () => {
                 />
               </div>
 
-              {/* Description */}
               <div className="mb-3">
                 <label htmlFor="description" className="form-label">
                   Description *
@@ -143,7 +142,7 @@ const Sell = () => {
                 ></textarea>
               </div>
 
-              {/* Condition */}
+             
               <div className="mb-3">
                 <label htmlFor="condition" className="form-label">
                   Condition *
@@ -165,7 +164,7 @@ const Sell = () => {
                 </select>
               </div>
 
-              {/* Category */}
+             
               <div className="mb-3">
                 <label htmlFor="category" className="form-label">
                   Category *
@@ -189,10 +188,10 @@ const Sell = () => {
                 </select>
               </div>
 
-              {/* Price */}
+              
               <div className="mb-3">
                 <label htmlFor="price" className="form-label">
-                  Price ($) *
+                  Price (R) *
                 </label>
                 <input
                   type="number"
@@ -206,7 +205,7 @@ const Sell = () => {
                 />
               </div>
 
-              {/* Image */}
+              
               <div className="mb-4">
                 <label htmlFor="image" className="form-label">
                   Product Image
@@ -232,7 +231,7 @@ const Sell = () => {
                 </div>
               </div>
 
-              {/* Buttons */}
+           
               <div className="d-grid gap-3">
                 <button
                   type="submit"
