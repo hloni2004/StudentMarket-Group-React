@@ -26,6 +26,7 @@ const Login = () => {
         // Save user data
         const userData = { ...result.data, role: result.role };
         localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("studentId", result.data.studentId);
 
         // Redirect based on role
         if (result.role === "admin") {
