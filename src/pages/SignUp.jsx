@@ -111,11 +111,6 @@ const SignUp = () => {
 
       toast.success("Welcome to Student Trade Hub.");
 
-      localStorage.setItem("user", JSON.stringify({
-        email: formData.email,
-        name: formData.firstName
-      }));
-
       navigate("/home");
     } catch (error) {
       console.error(error);
