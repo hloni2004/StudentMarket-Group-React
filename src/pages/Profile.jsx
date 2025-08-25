@@ -65,9 +65,6 @@ const Profile = () => {
           postalCode: addressInfo.postalCode ,
         });
 
-        if (data.residence?.residenceId) setResidenceId(data.residence.residenceId);
-        if (data.residence?.address?.addressId) setAddressId(data.residence.address.addressId);
-
       } catch (error) {
         console.error(error);
         toast.error("Failed to load profile.");
@@ -84,16 +81,16 @@ const Profile = () => {
 
   const handleResidenceChange = (e) => {
     const residenceName = e.target.value;
-    const addressInfo = residenceAddresses[residenceName] || {};
+    const addressInfo = residenceAddresses[residenceName] ;
     setFormData(prev => ({
       ...prev,
       residenceName,
-      streetNumber: addressInfo.streetNumber || "",
-      streetName: addressInfo.streetName || "",
-      suburb: addressInfo.suburb || "",
-      city: addressInfo.city || "",
-      province: addressInfo.province || "",
-      postalCode: addressInfo.postalCode || ""
+      streetNumber: addressInfo.streetNumber ,
+      streetName: addressInfo.streetName ,
+      suburb: addressInfo.suburb ,
+      city: addressInfo.city,
+      province: addressInfo.province ,
+      postalCode: addressInfo.postalCode 
     }));
   };
 
@@ -174,68 +171,79 @@ const Profile = () => {
 
           {/* Active Listings */}
           <div className="col-md-4">
-            <div className="border rounded shadow-sm p-4" style={{ backgroundColor: "#f8f9fa", minHeight: "500px" }}>
-              <h4 className="text-secondary">Active Listings</h4>
-              <span className="badge bg-primary">{student?.productForSale?.length || 0} items</span>
-              <div className="overflow-auto mt-3" style={{ maxHeight: "420px" }}>
-                {student?.productForSale?.length > 0 ? student.productForSale.map(item => (
-                  <div key={item.id} className="card mb-3 shadow-sm">
-                    <img src={item.image || "https://placehold.co/400x200"} className="card-img-top" alt={item.name} />
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title">{item.name}</h5>
-                      <p className="card-text">${item.price}</p>
-                      <div className="mt-auto d-flex justify-content-between">
-                        <button className="btn btn-sm btn-outline-primary">Edit</button>
-                        <button className="btn btn-sm btn-outline-danger">Remove</button>
-                      </div>
-                    </div>
-                  </div>
-                )) : <p>No active listings.</p>}
+  <div className="border rounded shadow-sm p-4" style={{ backgroundColor: "#f8f9fa", minHeight: "500px" }}>
+    <h4 className="text-secondary">Active Listings</h4>
+    <span className="badge bg-primary">{student?.product?.length || 0} items</span>
+    <div className="overflow-auto mt-3" style={{ maxHeight: "420px" }}>
+      {student?.product?.length > 0 ? (
+        student.product.map(product => (
+          <div key={product.id} className="card mb-3 shadow-sm">
+            <img src={product.image || ""} className="card-img-top" alt={product.name} />
+            <div className="card-body d-flex flex-column">
+              <h5 className="card-title">{product.name}</h5>
+              <p className="card-text">${product.price}</p>
+              <div className="mt-auto d-flex justify-content-between">
+                <button className="btn btn-sm btn-outline-primary">Edit</button>
+                <button className="btn btn-sm btn-outline-danger">Remove</button>
               </div>
             </div>
           </div>
+        ))
+      ) : (
+        <p>No active listings.</p>
+      )}
+    </div>
+  </div>
+</div>
 
           {/* Sold Items */}
           <div className="col-md-4">
-            <div className="border rounded shadow-sm p-4" style={{ backgroundColor: "#e9f7ef", minHeight: "500px" }}>
-              <h4 className="text-success">Sold Items</h4>
-              <span className="badge bg-success">{student?.soldItems?.length || 0} items</span>
-              <div className="overflow-auto mt-3" style={{ maxHeight: "420px" }}>
-                {student?.soldItems?.length > 0 ? student.soldItems.map(item => (
-                  <div key={item.id} className="card mb-3 shadow-sm">
-                    <img src={item.image || "https://placehold.co/400x200"} className="card-img-top" alt={item.name} />
-                    <div className="card-body">
-                      <h5 className="card-title">{item.name}</h5>
-                      <p className="card-text">Sold for: ${item.price}</p>
-                    </div>
-                  </div>
-                )) : <p>No sold items.</p>}
-              </div>
+  <div className="border rounded shadow-sm p-4" style={{ backgroundColor: "#e9f7ef", minHeight: "500px" }}>
+    <h4 className="text-success">Sold Items</h4>
+    <span className="badge bg-success">{student?.soldProducts?.length || 0} items</span>
+    <div className="overflow-auto mt-3" style={{ maxHeight: "420px" }}>
+      {student?.soldProducts?.length > 0 ? (
+        student.soldProducts.map(item => (
+          <div key={item.id} className="card mb-3 shadow-sm">
+            <img src={item.image || ""} className="card-img-top" alt={item.name} />
+            <div className="card-body">
+              <h5 className="card-title">{item.name}</h5>
+              <p className="card-text">Sold for: ${item.price}</p>
             </div>
           </div>
+        ))
+      ) : (
+        <p>No sold items.</p>
+      )}
+    </div>
+  </div>
+</div>
+
 
           {/* Past Purchases */}
           <div className="col-md-4">
-            <div className="border rounded shadow-sm p-4" style={{ backgroundColor: "#fff3cd", minHeight: "500px" }}>
-              <h4 className="text-warning">Past Purchases</h4>
-              <span className="badge bg-warning text-dark">{student?.purchases?.length || 0} items</span>
-              <div className="overflow-auto mt-3" style={{ maxHeight: "420px" }}>
-                {student?.purchases?.length > 0 ? student.purchases.map(purchase => (
-                  <div key={purchase.id} className="card mb-3 shadow-sm">
-                    <img src={purchase.image || "https://placehold.co/400x200"} className="card-img-top" alt={purchase.name} />
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title">{purchase.name}</h5>
-                      <p className="card-text">From: {purchase.sellerName}</p>
-                      <p className="card-text">Price: ${purchase.price}</p>
-                    </div>
-                  </div>
-                )) : <p>No past purchases.</p>}
-              </div>
+  <div className="border rounded shadow-sm p-4" style={{ backgroundColor: "#fff3cd", minHeight: "500px" }}>
+    <h4 className="text-warning">Past Purchases</h4>
+    <span className="badge bg-warning text-dark">{student?.purchases?.length || 0} items</span>
+    <div className="overflow-auto mt-3" style={{ maxHeight: "420px" }}>
+      {student?.purchases?.length > 0 ? (
+        student.purchases.map(purchase => (
+          <div key={purchase.id} className="card mb-3 shadow-sm">
+            <img src={purchase.image || ""} className="card-img-top" alt={purchase.name} />
+            <div className="card-body d-flex flex-column">
+              <h5 className="card-title">{purchase.name}</h5>
+              <p className="card-text">From: {purchase.sellerName}</p>
+              <p className="card-text">Price: ${purchase.price}</p>
             </div>
           </div>
-
+        ))
+      ) : (
+        <p>No past purchases.</p>
+      )}
+    </div>
+  </div>
+</div>
         </div>
-
       </div>
 
       {/* Edit Profile Modal */}
