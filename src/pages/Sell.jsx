@@ -40,7 +40,6 @@ const Sell = () => {
 
     try {
       const storedUser = localStorage.getItem("loggedInUser");
-      const loggedInUser = storedUser ? JSON.parse(storedUser) : null;
 
       if (!loggedInUser || !loggedInUser.studentId) {
         setIsLoading(false);
