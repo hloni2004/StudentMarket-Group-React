@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaUsers, FaBoxOpen, FaSignOutAlt, FaChartBar, FaDatabase, FaUser } from "react-icons/fa";
+import { FaUsers, FaBoxOpen, FaSignOutAlt, FaChartBar, FaDatabase, FaUser, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
@@ -31,11 +31,8 @@ const AdminDashboard = () => {
       
       const data = await response.json();
       
-      const studentNames = data.map(student => 
-        `${student.firstName} ${student.lastName}`
-      );
-      
-      setStudents(studentNames);
+      // Store full student data instead of just names
+      setStudents(data);
       setStudentsCount(data.length);
       
     } catch (error) {
@@ -61,7 +58,6 @@ const AdminDashboard = () => {
       
       const data = await response.json();
       
-      // Store full product data including seller information
       setProducts(data);
       setProductsCount(data.length);
       
@@ -72,6 +68,49 @@ const AdminDashboard = () => {
       setProductsCount(0);
     } finally {
       setLoading(prev => ({ ...prev, products: false }));
+    }
+  };
+
+  const deleteStudent = async (studentId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/student/delete/${studentId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Remove student from the list
+        setStudents(prev => prev.filter(student => student.studentId !== studentId));
+        setStudentsCount(prev => prev - 1);
+        
+        // Also remove any products owned by this student
+        setProducts(prev => prev.filter(product => 
+          product.seller?.studentId !== studentId
+        ));
+        setProductsCount(prev => {
+          const deletedProductsCount = products.filter(product => 
+            product.seller?.studentId === studentId
+          ).length;
+          return prev - deletedProductsCount;
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting student:', error);
+    }
+  };
+
+  const deleteProduct = async (productId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/product/delete/${productId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Remove product from the list
+        setProducts(prev => prev.filter(product => product.productId !== productId));
+        setProductsCount(prev => prev - 1);
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
     }
   };
 
@@ -199,7 +238,7 @@ const AdminDashboard = () => {
                   ) : (
                     <>
                       <FaUsers className="me-2" size={16} />
-                      Refresh
+                      Load Students
                     </>
                   )}
                 </button>
@@ -229,7 +268,7 @@ const AdminDashboard = () => {
                   ) : (
                     <>
                       <FaBoxOpen className="me-2" size={16} />
-                      Refresh
+                      Load Products
                     </>
                   )}
                 </button>
@@ -271,7 +310,7 @@ const AdminDashboard = () => {
                     <div className="row g-2">
                       {students.map((student, idx) => (
                         <div key={idx} className="col-12">
-                          <div className="d-flex align-items-center p-3 rounded hover-bg-light" 
+                          <div className="d-flex align-items-center p-3 rounded" 
                                style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
                             <div 
                               className="d-flex align-items-center justify-content-center me-3 text-white fw-semibold"
@@ -283,12 +322,21 @@ const AdminDashboard = () => {
                                 fontSize: '14px'
                               }}
                             >
-                              {student.split(' ').map(n => n[0]).join('')}
+                              {student.firstName?.[0]}{student.lastName?.[0]}
                             </div>
                             <div className="flex-grow-1">
-                              <div className="fw-medium text-dark" style={{ fontSize: '14px' }}>{student}</div>
-                              <small className="text-muted">Active Student</small>
+                              <div className="fw-medium text-dark" style={{ fontSize: '14px' }}>
+                                {student.firstName} {student.lastName}
+                              </div>
+                              <small className="text-muted">{student.email}</small>
                             </div>
+                            <button
+                              className="btn btn-outline-danger btn-sm ms-2"
+                              onClick={() => deleteStudent(student.studentId)}
+                              style={{ borderRadius: '6px', padding: '4px 8px' }}
+                            >
+                              <FaTrash size={12} />
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -320,9 +368,9 @@ const AdminDashboard = () => {
                           <div className="card border-0" 
                                style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px' }}>
                             <div className="card-body p-3">
-                              {/* Product Header */}
+                              {/* Product Header with Delete Button */}
                               <div className="d-flex align-items-start justify-content-between mb-3">
-                                <div className="d-flex align-items-center">
+                                <div className="d-flex align-items-center flex-grow-1">
                                   <div 
                                     className="d-flex align-items-center justify-content-center me-3"
                                     style={{ 
@@ -362,13 +410,20 @@ const AdminDashboard = () => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="text-end">
+                                <div className="d-flex align-items-center gap-2">
                                   <span 
                                     className={`badge px-2 py-1 ${product.availabilityStatus ? 'bg-success' : 'bg-secondary'}`}
                                     style={{ fontSize: '10px', borderRadius: '4px' }}
                                   >
                                     {product.availabilityStatus ? 'Available' : 'Sold'}
                                   </span>
+                                  <button
+                                    className="btn btn-outline-danger btn-sm"
+                                    onClick={() => deleteProduct(product.productId)}
+                                    style={{ borderRadius: '4px', padding: '2px 6px' }}
+                                  >
+                                    <FaTrash size={10} />
+                                  </button>
                                 </div>
                               </div>
 
