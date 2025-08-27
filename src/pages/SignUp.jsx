@@ -111,7 +111,7 @@ const SignUp = () => {
 
       toast.success("Welcome to Student Trade Hub.");
 
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       console.error(error);
       toast.error("Signup failed. Please try again.");
