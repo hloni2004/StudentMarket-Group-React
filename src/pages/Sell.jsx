@@ -39,7 +39,7 @@ const Sell = () => {
     setIsLoading(true);
 
     try {
-      const storedUser = localStorage.getItem("loggedInUser");
+      // const storedUser = localStorage.getItem("loggedInUser");
 
       if (!loggedInUser || !loggedInUser.studentId) {
         setIsLoading(false);
@@ -78,7 +78,7 @@ const Sell = () => {
         await capturedProductDetails(formDataToSend);
 
         toast.success("Your item has been submitted for approval!");
-        navigate("/pending");
+        navigate("/home");
       } else {
         toast.error("Please fill in all required fields.");
       }
