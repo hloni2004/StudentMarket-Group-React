@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { Button, Modal, Form } from "react-bootstrap";
 import Header from "../components/Header";
 import { getStudentById, updateStudent } from "../service/StudentService";
+import { useNavigate } from "react-router-dom";
 
 const residenceAddresses = {
   "President House": {
@@ -38,6 +39,14 @@ const Profile = () => {
   const [formData, setFormData] = useState({});
   const [residenceId, setResidenceId] = useState(null);
   const [addressId, setAddressId] = useState(null);
+
+
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    
+    localStorage.removeItem("user");
+    navigate("/"); 
+  };
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -147,25 +156,34 @@ const Profile = () => {
       <div className="container mt-4">
 
         {/* Student Profile Info */}
-        <div className="border rounded shadow-sm p-4 mb-4">
-          <div className="d-flex justify-content-between align-items-start">
-            <div>
-              <h3>{student.firstName} {student.lastName}</h3>
-              <p>Email: {student.email}</p>
-              <p>Residence: {student.residence?.residenceName }</p>
-              <p>Floor: {student.residence?.floorNumber }</p>
-              {student.residence?.address && (
-                <p>
-                  Address: {student.residence.address.streetNumber}{" "}
-                  {student.residence.address.streetName}, {student.residence.address.suburb},{" "}
-                  {student.residence.address.city}, {student.residence.address.postalCode}
-                </p>
-              )}
-            </div>
-            <Button onClick={() => setShowModal(true)}>Edit Profile</Button>
-          </div>
-        </div>
+       < div className="border rounded shadow-sm p-4 mb-4 d-flex justify-content-between align-items-start">
+  
+<div>
+  <h3>{student.firstName}  {student.lastName}</h3>
+  <p>Email: {student.email}</p>
+  <p>Residence: {student.residence?.residenceName}</p>
+  <p>Floor: {student.residence?.floorNumber}</p>
+  {student.residence?.address && (
+    <p>
+      Address: {student.residence.address.streetNumber}{" "}
+      {student.residence.address.streetName}, {student.residence.address.suburb},{" "}
+      {student.residence.address.city}, {student.residence.address.postalCode}
+    </p>
+  )}
+   <div className="mt-auto">
+      <Button variant="danger" onClick={handleLogout}>
+        Logout
+      </Button>
+    </div>
+  </div>
+  
 
+  
+  <div className="d-flex flex-column align-items-end">
+    <Button onClick={() => setShowModal(true)}>Edit Profile</Button>
+  </div>
+</div>
+    
         {/* Dashboard */}
         <div className="row g-4">
 
@@ -186,8 +204,7 @@ const Profile = () => {
               <h5 className="card-title">{product.productName}</h5>
               <p className="card-text">R{product.price}</p>
               <div className="mt-auto d-flex justify-content-between">
-               {/* <button className="btn btn-sm btn-outline-primary">Edit</button>
-                <button className="btn btn-sm btn-outline-danger">Remove</button>*/}
+              
               </div>
             </div>
           </div>
