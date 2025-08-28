@@ -152,8 +152,8 @@ const Profile = () => {
             <div>
               <h3>{student.firstName} {student.lastName}</h3>
               <p>Email: {student.email}</p>
-              <p>Residence: {student.residence?.residenceName || "N/A"}</p>
-              <p>Floor: {student.residence?.floorNumber || "N/A"}</p>
+              <p>Residence: {student.residence?.residenceName }</p>
+              <p>Floor: {student.residence?.floorNumber }</p>
               {student.residence?.address && (
                 <p>
                   Address: {student.residence.address.streetNumber}{" "}
@@ -173,18 +173,21 @@ const Profile = () => {
           <div className="col-md-4">
   <div className="border rounded shadow-sm p-4" style={{ backgroundColor: "#f8f9fa", minHeight: "500px" }}>
     <h4 className="text-secondary">Active Listings</h4>
-    <span className="badge bg-primary">{student?.product?.length || 0} items</span>
+     <span className="badge bg-primary">{student?.productForSale?.length || 0} items</span>
     <div className="overflow-auto mt-3" style={{ maxHeight: "420px" }}>
-      {student?.product?.length > 0 ? (
-        student.product.map(product => (
-          <div key={product.id} className="card mb-3 shadow-sm">
-            <img src={product.image || ""} className="card-img-top" alt={product.name} />
+     {student?.productForSale?.length > 0 ? (
+        student.productForSale.map(product => (
+         <div key={product.productId} className="card mb-3 shadow-sm">
+            <img src={product.imageData? `data:${product.imageType};base64,${product.imageData}` : "/images/placeholder.png"}
+              className="card-img-top"
+              alt={product.productName} />
+           
             <div className="card-body d-flex flex-column">
-              <h5 className="card-title">{product.name}</h5>
-              <p className="card-text">${product.price}</p>
+              <h5 className="card-title">{product.productName}</h5>
+              <p className="card-text">R{product.price}</p>
               <div className="mt-auto d-flex justify-content-between">
-                <button className="btn btn-sm btn-outline-primary">Edit</button>
-                <button className="btn btn-sm btn-outline-danger">Remove</button>
+               {/* <button className="btn btn-sm btn-outline-primary">Edit</button>
+                <button className="btn btn-sm btn-outline-danger">Remove</button>*/}
               </div>
             </div>
           </div>
