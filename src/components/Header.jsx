@@ -1,9 +1,18 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; 
+import { Button } from "react-bootstrap";
 
 const Header = () => {
-  // Get logged-in user from localStorage
-  const user = JSON.parse(localStorage.getItem("user"));
+
+  const navigate = useNavigate(); 
+  const user = JSON.parse(localStorage.getItem("user")); // get logged-in user
+
+
+const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/"); 
+  };
+
 
   return (
     <header className="bg-light shadow-sm">
@@ -30,9 +39,12 @@ const Header = () => {
             <li className="nav-item">
               <Link className="nav-link" to="/profile">
                 <i className="bi bi-person me-1"></i>
-                {user.firstName }
+                Profile
               </Link>
             </li>
+            <li className="nav-item">
+              <Button variant="danger" onClick={handleLogout}>Logout</Button>
+              </li> 
           </ul>
         </nav>
       </div>

@@ -38,6 +38,7 @@ const Buy = () => {
           price: product.price,
           category: product.productCategory?.toLowerCase() || "misc",
           seller: product.seller
+
             ? `${product.seller.firstName} ${product.seller.lastName}`
             : "Unknown Seller",
           image: product.imageData
@@ -181,7 +182,9 @@ const Buy = () => {
                       <p className="card-text text-muted small flex-grow-1">
                         {product.description
                           ? product.description.length > 100
+
                             ? `${product.description.substring(0, 100)}...`
+
                             : product.description
                           : "No description available"}
                       </p>
