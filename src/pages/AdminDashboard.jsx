@@ -116,7 +116,7 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/login");
+    navigate("/");
   };
 
   const formatPrice = (price) => {
@@ -382,11 +382,9 @@ const AdminDashboard = () => {
                                     }}
                                   >
                                     <span style={{ fontSize: '18px' }}>
-                                      {product.productCategory === 'Electronics' ? '📱' :
-                                       product.productCategory === 'Books' ? '📚' :
-                                       product.productCategory === 'Laptop' ? '💻' :
-                                       product.productCategory === 'Speaker' ? '🔊' :
-                                       product.productCategory === 'Clothing' ? '👕' : '📦'}
+                                      <img src={product.imageData? `data:${product.imageType};base64,${product.imageData}` : "/images/placeholder.png"}
+                                        className="card-img-top"
+                                        alt={product.productName} />
                                     </span>
                                   </div>
                                   <div className="flex-grow-1">
