@@ -29,7 +29,7 @@ const App = () => (
         <Route path="/sell" element={<Sell />} />
         <Route path="/pending" element={<Pending />} />
         <Route path="/buy" element={<Buy />} />
-        <Route path="/transaction/:productId" element={<Transaction />} />
+        <Route path="/transaction" element={<Transaction />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />

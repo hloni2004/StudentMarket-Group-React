@@ -38,11 +38,12 @@ const Buy = () => {
           price: product.price,
           category: product.productCategory?.toLowerCase() || "misc",
           seller: product.seller
-            ? '${product.seller.firstName} ${product.seller.lastName}'
+
+            ? `${product.seller.firstName} ${product.seller.lastName}`
             : "Unknown Seller",
           image: product.imageData
-  ? `data:${product.imageType};base64,${product.imageData}`
-  : "https://via.placeholder.com/500x300?text=No+Image",
+            ? `data:${product.imageType};base64,${product.imageData}`
+            : "https://via.placeholder.com/500x300?text=No+Image",
         }));
 
         setProducts(apiProductsResponse);
@@ -181,7 +182,9 @@ const Buy = () => {
                       <p className="card-text text-muted small flex-grow-1">
                         {product.description
                           ? product.description.length > 100
-                            ? '${product.description.substring(0, 100)}...'
+
+                            ? `${product.description.substring(0, 100)}...`
+
                             : product.description
                           : "No description available"}
                       </p>
