@@ -31,7 +31,6 @@ const AdminDashboard = () => {
       
       const data = await response.json();
       
-      // Store full student data instead of just names
       setStudents(data);
       setStudentsCount(data.length);
       
@@ -78,11 +77,9 @@ const AdminDashboard = () => {
       });
       
       if (response.ok) {
-        // Remove student from the list
         setStudents(prev => prev.filter(student => student.studentId !== studentId));
         setStudentsCount(prev => prev - 1);
         
-        // Also remove any products owned by this student
         setProducts(prev => prev.filter(product => 
           product.seller?.studentId !== studentId
         ));
@@ -105,7 +102,7 @@ const AdminDashboard = () => {
       });
       
       if (response.ok) {
-        // Remove product from the list
+    
         setProducts(prev => prev.filter(product => product.productId !== productId));
         setProductsCount(prev => prev - 1);
       }
@@ -152,7 +149,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-vh-100" style={{ backgroundColor: '#f8fafc' }}>
-      {/* Header */}
+   
       <div className="border-bottom bg-white shadow-sm">
         <div className="container-fluid px-4 py-3">
           <div className="d-flex justify-content-between align-items-center">
@@ -179,7 +176,6 @@ const AdminDashboard = () => {
       </div>
 
       <div className="container-fluid px-4 py-4">
-        {/* Statistics Overview */}
         <div className="row g-3 mb-4">
           <div className="col-lg-6 col-md-6">
             <div className="card border-0 h-100" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
@@ -214,7 +210,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Action Section */}
+        
         <div className="row g-4 mb-4">
           <div className="col-md-6">
             <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
@@ -277,7 +273,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Error Messages */}
         {error.students && (
           <div className="alert alert-danger border-0 mb-4" style={{ borderRadius: '12px', backgroundColor: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca' }}>
             <strong>Unable to load students:</strong> {error.students}
@@ -290,9 +285,8 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* Data Display Section */}
         <div className="row g-4">
-          {/* Students List */}
+
           {students.length > 0 && (
             <div className="col-lg-6">
               <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
@@ -347,7 +341,7 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* Products with Owner Information */}
+         
           {products.length > 0 && (
             <div className="col-lg-6">
               <div className="card border-0" style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
@@ -368,7 +362,6 @@ const AdminDashboard = () => {
                           <div className="card border-0" 
                                style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px' }}>
                             <div className="card-body p-3">
-                              {/* Product Header with Delete Button */}
                               <div className="d-flex align-items-start justify-content-between mb-3">
                                 <div className="d-flex align-items-center flex-grow-1">
                                   <div 
@@ -425,7 +418,6 @@ const AdminDashboard = () => {
                                 </div>
                               </div>
 
-                              {/* Product Description */}
                               {product.productDescription && (
                                 <div className="mb-3">
                                   <p className="text-muted small mb-0" style={{ fontSize: '12px', lineHeight: '1.4' }}>
@@ -436,7 +428,6 @@ const AdminDashboard = () => {
                                 </div>
                               )}
 
-                              {/* Owner Information */}
                               <div className="border-top pt-3">
                                 <div className="d-flex align-items-center">
                                   <div className="d-flex align-items-center">
@@ -476,7 +467,6 @@ const AdminDashboard = () => {
                                 </div>
                               </div>
 
-                              {/* Product Category */}
                               <div className="mt-2">
                                 <small className="text-muted">
                                   Category: <span className="text-dark fw-medium">{product.productCategory}</span>
@@ -494,7 +484,6 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        {/* Empty State */}
         {students.length === 0 && products.length === 0 && !loading.students && !loading.products && (
           <div className="text-center py-5">
             <div className="mb-4">
