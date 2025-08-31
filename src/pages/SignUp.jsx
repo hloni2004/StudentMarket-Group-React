@@ -216,7 +216,7 @@ const SignUp = () => {
               </div>
             </div>
 
-            {/* Residence Information */}
+            
             <div className="mb-4">
               <h5 className="mb-3">Residence Information</h5>
               <div className="mb-3">
@@ -275,7 +275,7 @@ const SignUp = () => {
               </div>
             </div>
 
-            {/* Address Information */}
+      
             <div className="mb-4">
               <h5 className="mb-3">Address Information</h5>
               <div className="row mb-3">

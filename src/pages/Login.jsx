@@ -12,7 +12,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      //  use the service function with axios
+      
       const response = await authenticateUser({
           email: credentials.identifier,
           password: credentials.password
@@ -23,12 +23,12 @@ const Login = () => {
       console.log("Login response:", result);
 
       if (response.status === 200 && result.success) {
-        // Save user data
+        
         const userData = { ...result.data, role: result.role };
         localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("studentId", result.data.studentId);
 
-        // Redirect based on role
+        
         if (result.role === "admin") {
           navigate("/admin-dashboard");
         } else {
