@@ -124,7 +124,7 @@ const SignUp = () => {
     <div className="min-vh-100 bg-light d-flex align-items-center justify-content-center p-3">
       <div className="card w-100" style={{ maxWidth: "500px" }}>
         <div className="card-header text-center bg-white border-0">
-          <h2 className="card-title text-primary mb-1">Join Student Trade Hub</h2>
+          <h2 className="card-title text-primary mb-1">Join Student Market Place</h2>
           <p className="card-text text-muted">Create your account to start trading</p>
         </div>
         <div className="card-body">

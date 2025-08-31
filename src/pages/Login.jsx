@@ -52,7 +52,7 @@ const Login = () => {
       <div className="card w-100" style={{ maxWidth: "400px" }}>
         <div className="card-header text-center bg-white border-0">
           <h2 className="card-title text-primary mb-1">Login</h2>
-          <p className="text-muted">Login to your SouthPoint Student Trade</p>
+          <p className="text-muted">Login to your Student Market Place</p>
         </div>
         <div className="card-body">
           <form onSubmit={handleLogin}>
