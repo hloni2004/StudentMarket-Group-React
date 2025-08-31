@@ -48,60 +48,60 @@ const Home = () => {
             <Link className="btn btn-primary btn-lg" to="/sell">
               Sell items
             </Link>
-          </div>
-
-          <div id="carouselSlide" className="carousel slide" data-bs-ride="carousel" data-bs-interval="2000"style={{ maxWidth: "700px" }}>
-            <div className="carousel-inner">
-              {products.length === 0 && (
-                <div className="carousel-item active">
-                  <img src={placeholder}
-                    className="d-block w-100"
-                    alt="No products"
-                  />
-                  <div className="carousel-caption">
-                    <h5>No products available</h5>
-                  </div>
-                </div>
-              )}
-
-              {products.map((product, index) => (
-                <div
-                  className={"carousel-item" + (index === 0 ? " active" : "")}
-                  key={product.id}
-                >
-                  <Link to={`/transaction/${product.id}`}>
-                    <img
-                      src={product.image}
-                      className="d-block w-100"
-                      alt={product.name}
-                      style={{ height: "400px", objectFit: "cover" }}
-                    />
-                    <div className="carousel-caption">
-                      <h5>{product.name}</h5>
-                      <p>R {product.price}</p>
-                    </div>
-                  </Link>
-                </div>
-              ))}
+          </d<div>
+            
+            <div className="alert alert-info mt-3 text-center fw-bold" role="alert">
+              Hot picks from students selling right now!
             </div>
 
-            {/* Carousel controls */}
-            <button
-              className="carousel-control-prev"
-              type="button"
-              data-bs-target="#carouselSlide"
-              data-bs-slide="prev"
-            >
-              <span className="carousel-control-prev-icon"></span>
-            </button>
-            <button
-              className="carousel-control-next"
-              type="button"
-              data-bs-target="#carouselSlide"
-              data-bs-slide="next"
-            >
-              <span className="carousel-control-next-icon"></span>
-            </button>
+            {/* ✅ Bootstrap slider */}
+            <div id="carouselSlide" className="carousel slide" data-bs-ride="carousel" data-bs-interval="2000" style={{ maxWidth: "700px" }} >
+              <div className="carousel-inner">
+                {products.length === 0 && (
+                  <div className="carousel-item active">
+                    <img src={placeholder} className="d-block w-100" alt="No products" style={{ height: "400px", objectFit: "cover" }}/>
+                    <div className="carousel-caption bg-dark bg-opacity-50 rounded p-2">
+                      <h5>No products available</h5>
+                    </div>
+                  </div>
+                )}
+
+                {products.map((product, index) => (
+                  <div className={`carousel-item${index === 0 ? " active" : ""}`} key={product.id} >
+                    <Link to={`/transaction/${product.id}`}>
+                      <img
+                        src={product.image}
+                        className="d-block w-100"
+                        alt={product.name}
+                        style={{ height: "400px", objectFit: "cover" }}
+                      />
+                      <div className="carousel-caption bg-dark bg-opacity-50 rounded p-2">
+                        <h5>{product.name}</h5>
+                        <p>R {product.price}</p>
+                      </div>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+
+              {/* Carousel controls */}
+              <button
+                className="carousel-control-prev"
+                type="button"
+                data-bs-target="#carouselSlide"
+                data-bs-slide="prev"
+              >
+                <span className="carousel-control-prev-icon"></span>
+              </button>
+              <button
+                className="carousel-control-next"
+                type="button"
+                data-bs-target="#carouselSlide"
+                data-bs-slide="next"
+              >
+                <span className="carousel-control-next-icon"></span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
