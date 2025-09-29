@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Search } from "react-bootstrap-icons";
 import { getAllProducts } from "../service/ProductService";
@@ -22,12 +22,20 @@ const Buy = () => {
   useEffect(() => {
     getAllProducts()
       .then((response) => {
-        const apiProductsResponse = response.data.map((product) => ({
+        
+     const apiProductsResponse = response.data.map((product) => ({
           productName: product.productName,
-          description: product.productDescription,
+          productDescription: product.productDescription,
+          condition: product.condition,
+          price: product.price,
+          productCategory: product.productCategory,
+          seller: product.seller,
+          imageData: product.imageData,
+          imageType: product.imageType,
+          
           status: (() => {
-            if (!product.productCondition) return "good";
-            const c = product.productCondition.toLowerCase();
+            if (!product.condition) return "good";
+            const c = product.condition.toLowerCase();
             if (c.includes("like new")) return "like-new";
             if (c.includes("new")) return "new";
             if (c.includes("good")) return "good";
@@ -35,10 +43,8 @@ const Buy = () => {
             if (c.includes("poor")) return "poor";
             return "secondary";
           })(),
-          price: product.price,
           category: product.productCategory?.toLowerCase() || "misc",
-          seller: product.seller
-
+          sellerName: product.seller
             ? `${product.seller.firstName} ${product.seller.lastName}`
             : "Unknown Seller",
           image: product.imageData
@@ -63,7 +69,7 @@ const Buy = () => {
       filtered = filtered.filter(
         (product) =>
           product.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+          product.productDescription?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -105,7 +111,6 @@ const Buy = () => {
 
         <h1 className="h2 mb-4 text-primary">Student Marketplace</h1>
 
-      
         <div className="row g-3 mb-4">
           <div className="col-md-8">
             <div className="input-group">
@@ -139,7 +144,6 @@ const Buy = () => {
           </div>
         </div>
 
-      
         {loading ? (
           <div className="text-center py-5 text-muted">
             <div className="spinner-border me-2" role="status">
@@ -151,7 +155,7 @@ const Buy = () => {
           <>
             <div className="row g-4">
               {filteredProducts.map((product) => (
-                <div className="col-md-6 col-lg-4" key={product.id}>
+                <div className="col-md-6 col-lg-4" key={product.productId}>
                   <div className="card h-100 shadow-sm">
                     {product.image && (
                       <div className="ratio ratio-16x9">
@@ -180,12 +184,10 @@ const Buy = () => {
                         </span>
                       </div>
                       <p className="card-text text-muted small flex-grow-1">
-                        {product.description
-                          ? product.description.length > 100
-
-                            ? `${product.description.substring(0, 100)}...`
-
-                            : product.description
+                        {product.productDescription
+                          ? product.productDescription.length > 100
+                            ? `${product.productDescription.substring(0, 100)}...`
+                            : product.productDescription
                           : "No description available"}
                       </p>
                       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -193,11 +195,11 @@ const Buy = () => {
                           {formatPrice(product.price)}
                         </span>
                         <span className="text-muted small">
-                          by {product.seller}
+                          by {product.sellerName}
                         </span>
                       </div>
                       <Link
-                        to={`/transaction/${product.id}`}
+                        to={`/transaction/${product.productId}`}
                         className="btn btn-primary w-100"
                       >
                         Buy Now
@@ -208,7 +210,6 @@ const Buy = () => {
               ))}
             </div>
 
-          
             {filteredProducts.length === 0 && (
               <div className="text-center py-5">
                 <p className="text-muted">No items found matching your criteria.</p>
