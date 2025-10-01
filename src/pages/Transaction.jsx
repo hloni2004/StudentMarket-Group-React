@@ -2,26 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Shield, Truck, ExclamationTriangle } from 'react-bootstrap-icons';
 import { getProductById } from '../service/ProductService';
-import {createTransaction} from '../service/TransactionService';
+import { createTransaction } from '../service/TransactionService';
 import PayQrCode from '../assets/PayQrCode.jpeg';
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe("pk_test_51S6IAIKvzaquBxnBmz1NTRBTJPfw5eTwRYKekVDxShaMSzPKGBpaKQ9lAcyBtDHGix7PPaLuvQJbvgPWZlLwYohF00USTba4Xm");
 
 const Transaction = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Fetch product details on load
+  // Fetch product details
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        if (!id || id === 'undefined') {
-          throw new Error('Invalid product ID');
-        }
+        if (!id || id === 'undefined') throw new Error('Invalid product ID');
 
         const productResponse = await getProductById(id);
         setProduct(productResponse.data);
@@ -31,7 +33,6 @@ const Transaction = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [id]);
 
@@ -45,12 +46,18 @@ const Transaction = () => {
     }).format(price);
   };
 
-  // Handle purchase click
+  // Handle purchase
   const handlePurchase = async () => {
     try {
       setProcessing(true);
 
-      // Get the current student ID from localStorage
+      if (!product) {
+        setError("No product loaded");
+        setProcessing(false);
+        return;
+      }
+
+      // Get studentId from localStorage
       const studentId = localStorage.getItem("studentId");
       if (!studentId) {
         setError('You must be logged in to make a purchase');
@@ -58,16 +65,36 @@ const Transaction = () => {
         return;
       }
 
-      // Call backend to create transaction (emails sent automatically)
+      // Create transaction in backend (emails sent automatically)
       await createTransaction(id, studentId);
 
-      // Show success message
-      setSuccess(true);
+      // Call backend Stripe session
+      const response = await fetch(`http://localhost:8080/api/product/checkout/${product.productId}`, {
+        method: "POST",
+      });
 
-      // Redirect home after 90 seconds
-      setTimeout(() => navigate('/home'), 90000);
+      const data = await response.json();
+      if (data.status !== "Success" || !data.sessionId) {
+        throw new Error(data.message || "Failed to create Stripe session");
+      }
+
+      const stripe = await stripePromise;
+      const { error } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
+
+      if (error) {
+        console.error("Stripe checkout error:", error);
+        setError(error.message);
+        setProcessing(false);
+      } else {
+        // Payment succeeded → show success screen
+        setSuccess(true);
+
+        // Redirect home after 5 seconds
+        setTimeout(() => navigate('/home'), 5000);
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Purchase failed. Please try again.');
+      console.error("Purchase failed:", err);
+      setError(err.message || "Payment failed. Please try again.");
       setProcessing(false);
     }
   };
@@ -83,7 +110,12 @@ const Transaction = () => {
         <h1 className="h2 mb-4 text-primary">Complete Your Purchase</h1>
         <div className="row">
           <ItemDetails product={product} formatPrice={formatPrice} />
-          <OrderSummary product={product} formatPrice={formatPrice} handlePurchase={handlePurchase} processing={processing} />
+          <OrderSummary 
+            product={product} 
+            formatPrice={formatPrice} 
+            handlePurchase={handlePurchase} 
+            processing={processing} 
+          />
         </div>
       </div>
     </div>
@@ -128,30 +160,17 @@ const Error = ({ productId, message }) => (
 );
 
 const Success = () => (
-  <div className="min-vh-100 bg-light">
-    <div className="container py-4">
-      <div className="row justify-content-center">
-        <div className="col-md-8 col-lg-6">
-          <div className="card shadow-sm border-0">
-            <div className="card-body text-center p-5">
-              <div className="ratio ratio-1x1">
-                <img src={PayQrCode} alt="QR Code" />
-              </div>
-              <p className="card-text mb-4">
-                Thank you for your purchase. Emails have been sent to both buyer and seller.
-                You will be redirected to the homepage shortly.
-              </p>
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Redirecting...</span>
-              </div>
-              <div className="mt-3">
-                <Link to="/home" className="btn btn-outline-primary">
-                  Return Home Now
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div className="min-vh-100 bg-light d-flex justify-content-center align-items-center">
+    <div className="text-center">
+      <div className="ratio ratio-1x1 mb-3" style={{ maxWidth: "200px", margin: "0 auto" }}>
+        <img src={PayQrCode} alt="QR Code" className="img-fluid" />
+      </div>
+      <p className="mb-3">
+        Thank you for your purchase 🎉  
+        You will be redirected to the homepage shortly...
+      </p>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Redirecting...</span>
       </div>
     </div>
   </div>
