@@ -11,6 +11,8 @@ const Sell = () => {
     condition: "",
     category: "",
     price: "",
+    currency: "zar",
+    quantinty: 1,
     image: null,
   });
   const [isLoading, setIsLoading] = useState(false);
