@@ -7,20 +7,17 @@ import placeholder from "../assets/placeholder.png";
 const Home = () => {
   const [products, setProducts] = useState([]);
 
-  
   useEffect(() => {
     getAllProducts()
       .then((response) => {
-       
         const apiProductsResponse = response.data.map((product) => ({
           id: product.id,
           name: product.productName,
           price: product.price,
           image: product.imageData
             ? `data:${product.imageType};base64,${product.imageData}`
-            : placeholder.png, 
+            : placeholder,
         }));
-
         setProducts(apiProductsResponse);
       })
       .catch((err) => console.error("Failed to fetch products:", err));
@@ -32,13 +29,19 @@ const Home = () => {
       <br />
       <div className="container my-5">
         <div className="row row-cols-2 align-items-center">
+          {/* Left side content */}
           <div className="container">
             <h1>
-              Buy & Sell <small className="text-muted"><br />within your residence</small>
+              Buy & Sell{" "}
+              <small className="text-muted">
+                <br />
+                within your residence
+              </small>
             </h1>
             <p className="lead">
               A safe trusted marketplace for CPUT students <br />
-              where you can get great deals or turn your unused items into cash,<br />
+              where you can get great deals or turn your unused items into cash,
+              <br />
               without having to leave your respective residence
             </p>
 
@@ -50,58 +53,86 @@ const Home = () => {
             </Link>
           </div>
 
-          <div id="carouselSlide" className="carousel slide" data-bs-ride="carousel" data-bs-interval="2000"style={{ maxWidth: "700px" }}>
-            <div className="carousel-inner">
-              {products.length === 0 && (
-                <div className="carousel-item active">
-                  <img src={placeholder}
-                    className="d-block w-100"
-                    alt="No products"
-                  />
-                  <div className="carousel-caption">
-                    <h5>No products available</h5>
-                  </div>
-                </div>
-              )}
+          {/* Right side carousel */}
+          <div style={{ maxWidth: "700px", marginTop: "20px" }}>
+           
+            <div
+              style={{
+               
+                padding: "10px 20px",
+                borderRadius: "25px",
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: "1.1rem",
+                marginBottom: "15px",
+                color: "#000",
+                
+              }}
+            >
+              Hot Picks from Our Selling Students 🔥
+            </div>
 
-              {products.map((product, index) => (
-                <div
-                  className={"carousel-item" + (index === 0 ? " active" : "")}
-                  key={product.id}
-                >
-                  <Link to={`/transaction/${product.id}`}>
+            {/* Carousel */}
+            <div
+              id="carouselSlide"
+              className="carousel slide"
+              data-bs-ride="carousel"
+              data-bs-interval="2000"
+            >
+              <div className="carousel-inner">
+                {products.length === 0 && (
+                  <div className="carousel-item active">
                     <img
-                      src={product.image}
+                      src={placeholder}
                       className="d-block w-100"
-                      alt={product.name}
+                      alt="No products"
                       style={{ height: "400px", objectFit: "cover" }}
                     />
                     <div className="carousel-caption">
-                      <h5>{product.name}</h5>
-                      <p>R {product.price}</p>
+                      <h5>No products available</h5>
                     </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
+                  </div>
+                )}
 
-           
-            <button
-              className="carousel-control-prev"
-              type="button"
-              data-bs-target="#carouselSlide"
-              data-bs-slide="prev"
-            >
-              <span className="carousel-control-prev-icon"></span>
-            </button>
-            <button
-              className="carousel-control-next"
-              type="button"
-              data-bs-target="#carouselSlide"
-              data-bs-slide="next"
-            >
-              <span className="carousel-control-next-icon"></span>
-            </button>
+                {products.map((product, index) => (
+                  <div
+                    className={"carousel-item" + (index === 0 ? " active" : "")}
+                    key={product.id}
+                  >
+                    <Link to={`/transaction/${product.id}`}>
+                      <img
+                        src={product.image}
+                        className="d-block w-100"
+                        alt={product.name}
+                        style={{ height: "400px", objectFit: "cover" }}
+                      />
+                      <div className="carousel-caption">
+                        <h5>{product.name}</h5>
+                        <p>R {product.price}</p>
+                      </div>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+
+              {/* Carousel controls */}
+              <button
+                className="carousel-control-prev"
+                type="button"
+                data-bs-target="#carouselSlide"
+                data-bs-slide="prev"
+              >
+                <span className="carousel-control-prev-icon"></span>
+              </button>
+              <button
+                className="carousel-control-next"
+                type="button"
+                data-bs-target="#carouselSlide"
+                data-bs-slide="next"
+              >
+                <span className="carousel-control-next-icon"></span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

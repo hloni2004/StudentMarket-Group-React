@@ -40,6 +40,7 @@ const Profile = () => {
   const [residenceId, setResidenceId] = useState(null);
   const [addressId, setAddressId] = useState(null);
 
+const [profilePic, setProfilePic] = useState("/images/placeholder.png");
 
   const navigate = useNavigate();
   const handleLogout = () => {
