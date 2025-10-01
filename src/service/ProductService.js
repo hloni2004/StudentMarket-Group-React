@@ -3,6 +3,7 @@ import axios from "axios";
 const PRODUCT_API_BASE_URL = 'http://localhost:8181/api/product';
 // const TRANSACTION_API_BASE_URL = 'http://localhost:8181/api/transaction';
 
+//saving to the db
 export const capturedProductDetails = (formData) => {
   return axios.post(PRODUCT_API_BASE_URL + "/create", formData, {
     headers: {
@@ -16,6 +17,7 @@ export const getAllProducts = () => {
   return axios.get(PRODUCT_API_BASE_URL + '/getAllProducts');
 }
 
+//delete product 
 export const deleteProduct = (productId) => {
   return axios.delete(`${PRODUCT_API_BASE_URL}/delete/${productId}`);
 };
@@ -25,12 +27,11 @@ export const getProductById = (id) => {
   return axios.get(`${PRODUCT_API_BASE_URL}/read/${id}`);
 };
 
-// // Create transaction
-// export const createTransaction = (productId, buyerId) => {
-//   return axios.post(`${TRANSACTION_API_BASE_URL}/create`, null, {
-//     params: { 
-//       productId: productId, 
-//       buyerId: buyerId 
-//     }
-//   });
-// };
+
+
+
+
+//making payment
+export const payForProduct = (product) => {
+  return axios.post(REST_API_BASE_URL + `/checkout` + product);
+};
