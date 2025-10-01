@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const PRODUCT_API_BASE_URL = 'http://localhost:8181/api/product';
+const PRODUCT_API_BASE_URL = 'http://localhost:8080/api/product';
 // const TRANSACTION_API_BASE_URL = 'http://localhost:8181/api/transaction';
 
 //saving to the db

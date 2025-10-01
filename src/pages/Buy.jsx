@@ -209,12 +209,7 @@ const Buy = () => {
                           by {product.sellerName}
                         </span>
                       </div>
-                      <Link
-                        to={`/transaction/${product.productId}`}
-                        className="btn btn-primary w-100"
-                      >
-                        Buy Now
-                      </Link>
+                    
 
                       <div className="d-flex gap-2">
                         <Link
