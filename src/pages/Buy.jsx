@@ -26,7 +26,8 @@ const Buy = () => {
   useEffect(() => {
     getAllProducts()
       .then((response) => {
-        const apiProductsResponse = response.data.map((product) => ({
+        
+     const apiProductsResponse = response.data.map((product) => ({
           productId: product.productId,
           productName: product.productName,
           productDescription: product.productDescription,
@@ -36,6 +37,8 @@ const Buy = () => {
           seller: product.seller,
           imageData: product.imageData,
           imageType: product.imageType,
+          
+          
           status: (() => {
             if (!product.condition) return "good";
             const c = product.condition.toLowerCase();
@@ -206,6 +209,12 @@ const Buy = () => {
                           by {product.sellerName}
                         </span>
                       </div>
+                      <Link
+                        to={`/transaction/${product.productId}`}
+                        className="btn btn-primary w-100"
+                      >
+                        Buy Now
+                      </Link>
 
                       <div className="d-flex gap-2">
                         <Link
