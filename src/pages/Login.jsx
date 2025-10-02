@@ -12,30 +12,35 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      
       const response = await authenticateUser({
-          email: credentials.identifier,
-          password: credentials.password
-        
+        email: credentials.identifier,
+        password: credentials.password
       });
 
       const result = response.data;
       console.log("Login response:", result);
 
       if (response.status === 200 && result.success) {
-        
+        // Store user data with role
         const userData = { ...result.data, role: result.role };
         localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("studentId", result.data.studentId);
-
         
-        if (result.role === "admin") {
-          navigate("/admin-dashboard");
-        } else {
-          navigate("/home");
+        // Store studentId if it's a student
+        if (result.data.studentId) {
+          localStorage.setItem("studentId", result.data.studentId);
         }
 
-        alert(`Welcome back, ${result.data.firstName}!`);
+        // Redirect based on role
+        if (result.role === "superadmin") {
+          navigate("/superadmin-dashboard");
+          alert(`Welcome back, Super Admin ${result.data.username}!`);
+        } else if (result.role === "admin") {
+          navigate("/admin-dashboard");
+          alert(`Welcome back, Admin ${result.data.firstName || result.data.username}!`);
+        } else {
+          navigate("/home");
+          alert(`Welcome back, ${result.data.firstName}!`);
+        }
       } else {
         alert(result.message || "Login failed. Please check your credentials.");
       }
@@ -98,7 +103,7 @@ const Login = () => {
           </form>
           <div className="mt-4 text-center">
             <p className="text-muted">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <Link to="/signup" className="text-primary text-decoration-none fw-medium">
                 Sign up
               </Link>
