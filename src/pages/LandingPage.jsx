@@ -61,9 +61,9 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
+     
       <div className="position-relative" style={{ height: "80vh" }}>
-        {/* Blurry background */}
+      
         <div
           className="position-absolute w-100 h-100"
           style={{
@@ -75,7 +75,7 @@ const LandingPage = () => {
           }}
         ></div>
 
-        {/* Overlay content */}
+       
         <div
           className="position-relative d-flex flex-column justify-content-center align-items-center text-center h-100"
           style={{
@@ -121,7 +121,7 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Why Join Section */}
+      
       <div className="container text-center my-5">
         <h2 className="mb-4">Why Join?</h2>
         <div className="row">
@@ -143,7 +143,7 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Advertisement / Hot Picks from Buy Page */}
+     
      <div className="container my-5">
   <h3 className="mb-4 text-center fw-bold">Hot Picks from Students 🔥</h3>
   <div className="row flex-row flex-nowrap overflow-auto">

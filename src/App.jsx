@@ -24,13 +24,13 @@ const App = () => (
     <ToastContainer />
     <BrowserRouter>
       <Routes>
-<<<<<<< HEAD
+
       
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
 =======
         <Route path="/" element={<Login />} />
->>>>>>> 172b7e38d4db5c326a5ca5236bb935209fa96ef1
+
         <Route path="/signup" element={<SignUp />} />
         <Route path="/home" element={<Home />} /> 
         <Route path="/sell" element={<Sell />} />
