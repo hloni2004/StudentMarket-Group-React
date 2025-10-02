@@ -4,6 +4,9 @@ import { Button, Modal, Form } from "react-bootstrap";
 import Header from "../components/Header";
 import { getStudentById, updateStudent } from "../service/StudentService";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/footer";
+import { deleteProduct } from "../service/ProductService";
+
 
 const residenceAddresses = {
   "President House": {
@@ -104,6 +107,28 @@ const [profilePic, setProfilePic] = useState("/images/placeholder.png");
     }));
   };
 
+const handleRemove = async (productId) => {
+  if (!window.confirm("Are you sure you want to remove this item?")) return;
+
+  try {
+    await deleteProduct(productId);
+
+    // Update UI after successful deletion
+    setStudent((prev) => ({
+      ...prev,
+      productForSale: prev.productForSale.filter(
+        (p) => p.productId !== productId
+      ),
+    }));
+
+    alert("Item removed successfully!");
+  } catch (err) {
+    console.error("Error removing product:", err);
+    alert("Failed to remove item. Please try again.");
+  }
+};
+
+
   const handleSave = async () => {
   if (!student) return;
 
@@ -189,23 +214,45 @@ const [profilePic, setProfilePic] = useState("/images/placeholder.png");
         <div className="row g-4">
 
     
-          <div className="col-md-4">
-  <div className="border rounded shadow-sm p-4" style={{ backgroundColor: "#f8f9fa", minHeight: "500px" }}>
+        <div className="col-md-4">
+  <div
+    className="border rounded shadow-sm p-4"
+    style={{ backgroundColor: "#f8f9fa", minHeight: "500px" }}
+  >
     <h4 className="text-secondary">Active Listings</h4>
-     <span className="badge bg-primary">{student?.productForSale?.length || 0} items</span>
+    <span className="badge bg-primary">
+      {student?.productForSale?.length || 0} items
+    </span>
+
     <div className="overflow-auto mt-3" style={{ maxHeight: "420px" }}>
-     {student?.productForSale?.length > 0 ? (
-        student.productForSale.map(product => (
-         <div key={product.productId} className="card mb-3 shadow-sm">
-            <img src={product.imageData? `data:${product.imageType};base64,${product.imageData}` : "/images/placeholder.png"}
+      {student?.productForSale?.length > 0 ? (
+        student.productForSale.map((product) => (
+          <div key={product.productId} className="card mb-3 shadow-sm">
+            <img
+              src={
+                product.imageData
+                  ? `data:${product.imageType};base64,${product.imageData}`
+                  : "/images/placeholder.png"
+              }
               className="card-img-top"
-              alt={product.productName} />
-           
+              alt={product.productName}
+            />
+
             <div className="card-body d-flex flex-column">
               <h5 className="card-title">{product.productName}</h5>
               <p className="card-text">R{product.price}</p>
+
               <div className="mt-auto d-flex justify-content-between">
-              
+                
+               
+
+                {/* Remove Button */}
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => handleRemove(product.productId)}
+                >
+                  Remove
+                </button>
               </div>
             </div>
           </div>
@@ -216,6 +263,9 @@ const [profilePic, setProfilePic] = useState("/images/placeholder.png");
     </div>
   </div>
 </div>
+
+  
+
 
          
           <div className="col-md-4">
@@ -229,7 +279,7 @@ const [profilePic, setProfilePic] = useState("/images/placeholder.png");
                       <img src={item.image || ""} className="card-img-top" alt={item.name} />
                       <div className="card-body">
                         <h5 className="card-title">{item.name}</h5>
-                        <p className="card-text">Sold for: ${item.price}</p>
+                        <p className="card-text">Sold for: R{item.price}</p>
                       </div>
                     </div>
                   ))
@@ -254,7 +304,7 @@ const [profilePic, setProfilePic] = useState("/images/placeholder.png");
                       <div className="card-body d-flex flex-column">
                         <h5 className="card-title">{purchase.name}</h5>
                         <p className="card-text">From: {purchase.sellerName}</p>
-                        <p className="card-text">Price: ${purchase.price}</p>
+                        <p className="card-text">Price: R{purchase.price}</p>
                       </div>
                     </div>
                   ))
@@ -266,7 +316,7 @@ const [profilePic, setProfilePic] = useState("/images/placeholder.png");
           </div>
         </div>
       </div>
-
+ <Footer />
       
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton><Modal.Title>Edit Profile</Modal.Title></Modal.Header>

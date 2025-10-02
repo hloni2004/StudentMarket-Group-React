@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Search } from "react-bootstrap-icons";
 import { getAllProducts } from "../service/ProductService";
+import Footer from "../components/footer";
 
 const Buy = () => {
   const [products, setProducts] = useState([]);
@@ -220,6 +221,7 @@ const Buy = () => {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

@@ -15,6 +15,7 @@ import Transaction from "./pages/Transaction";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import LandingPage from "./pages/LandingPage";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,8 @@ const App = () => (
     <BrowserRouter>
       <Routes>
       
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/home" element={<Home />} /> 
         <Route path="/sell" element={<Sell />} />
