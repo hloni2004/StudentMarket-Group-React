@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Search } from "react-bootstrap-icons";
 import { getAllProducts } from "../service/ProductService";
+import { Modal, Button } from "react-bootstrap";  
 
 const Buy = () => {
   const [products, setProducts] = useState([]);
@@ -9,6 +10,9 @@ const Buy = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const formatPrice = (price) => {
     if (price == null) return "";
@@ -22,23 +26,31 @@ const Buy = () => {
   useEffect(() => {
     getAllProducts()
       .then((response) => {
-        const apiProductsResponse = response.data.map((product) => ({
+        
+     const apiProductsResponse = response.data.map((product) => ({
+          productId: product.productId,
           productName: product.productName,
-          description: product.productDescription,
+          productDescription: product.productDescription,
+          condition: product.condition,
+          price: product.price,
+          productCategory: product.productCategory,
+          seller: product.seller,
+          imageData: product.imageData,
+          imageType: product.imageType,
+          
+          
           status: (() => {
-            if (!product.productCondition) return "good";
-            const c = product.productCondition.toLowerCase();
-            if (c.includes("like new")) return "like-new";
+            if (!product.condition) return "good";
+            const c = product.condition.toLowerCase();
+            if (c.includes("like-new")) return "like-new";
             if (c.includes("new")) return "new";
             if (c.includes("good")) return "good";
             if (c.includes("fair")) return "fair";
             if (c.includes("poor")) return "poor";
             return "secondary";
           })(),
-          price: product.price,
           category: product.productCategory?.toLowerCase() || "misc",
-          seller: product.seller
-
+          sellerName: product.seller
             ? `${product.seller.firstName} ${product.seller.lastName}`
             : "Unknown Seller",
           image: product.imageData
@@ -63,7 +75,7 @@ const Buy = () => {
       filtered = filtered.filter(
         (product) =>
           product.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+          product.productDescription?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -105,7 +117,6 @@ const Buy = () => {
 
         <h1 className="h2 mb-4 text-primary">Student Marketplace</h1>
 
-      
         <div className="row g-3 mb-4">
           <div className="col-md-8">
             <div className="input-group">
@@ -139,7 +150,6 @@ const Buy = () => {
           </div>
         </div>
 
-      
         {loading ? (
           <div className="text-center py-5 text-muted">
             <div className="spinner-border me-2" role="status">
@@ -151,14 +161,19 @@ const Buy = () => {
           <>
             <div className="row g-4">
               {filteredProducts.map((product) => (
-                <div className="col-md-6 col-lg-4" key={product.id}>
+                <div className="col-md-6 col-lg-4" key={product.productId}>
                   <div className="card h-100 shadow-sm">
                     {product.image && (
-                      <div className="ratio ratio-16x9">
+                      <div className="ratio ratio-16x9 d-flex justify-content-center align-items-center bg-light">
                         <img
                           src={product.image}
                           alt={product.productName}
-                          className="card-img-top object-fit-cover"
+                          style={{
+                            objectFit: "contain",
+                            maxHeight: "100%",
+                            maxWidth: "100%",
+                          }}
+                          className="card-img-top"
                           onError={(e) => {
                             e.currentTarget.src =
                               "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=500&h=300&fit=crop";
@@ -180,12 +195,10 @@ const Buy = () => {
                         </span>
                       </div>
                       <p className="card-text text-muted small flex-grow-1">
-                        {product.description
-                          ? product.description.length > 100
-
-                            ? `${product.description.substring(0, 100)}...`
-
-                            : product.description
+                        {product.productDescription
+                          ? product.productDescription.length > 100
+                            ? `${product.productDescription.substring(0, 100)}...`
+                            : product.productDescription
                           : "No description available"}
                       </p>
                       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -193,22 +206,35 @@ const Buy = () => {
                           {formatPrice(product.price)}
                         </span>
                         <span className="text-muted small">
-                          by {product.seller}
+                          by {product.sellerName}
                         </span>
                       </div>
-                      <Link
-                        to={`/transaction/${product.id}`}
-                        className="btn btn-primary w-100"
-                      >
-                        Buy Now
-                      </Link>
+                    
+
+                      <div className="d-flex gap-2">
+                        <Link
+                          to={`/transaction/${product.productId}`}
+                          className="btn btn-primary flex-fill"
+                        >
+                          Buy Now
+                        </Link>
+                        <Button
+                          variant="outline-secondary"
+                          className="flex-fill"
+                          onClick={() => {
+                            setSelectedProduct(product);
+                            setShowModal(true);
+                          }}
+                        >
+                          View More
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-          
             {filteredProducts.length === 0 && (
               <div className="text-center py-5">
                 <p className="text-muted">No items found matching your criteria.</p>
@@ -220,6 +246,90 @@ const Buy = () => {
           </>
         )}
       </div>
+
+      
+      <Modal
+  show={showModal}
+  onHide={() => setShowModal(false)}
+  size="lg"
+  centered
+>
+  {selectedProduct && (
+    <div className="p-3 position-relative">
+     
+      <button
+        type="button"
+        className="btn-close position-absolute top-0 end-0 m-3"
+        aria-label="Close"
+        onClick={() => setShowModal(false)}
+      ></button>
+
+      
+      <h5 className="fw-bold mb-3">{selectedProduct.productName}</h5>
+
+      
+      <div className="ratio ratio-16x9 d-flex justify-content-center align-items-center bg-light">
+        <img
+          src={selectedProduct.image}
+          alt={selectedProduct.productName}
+          style={{
+            objectFit: "contain",
+            maxHeight: "100%",
+            maxWidth: "100%",
+          }}
+          className="card-img-top"
+        />
+      </div>
+
+      
+      <h4 className="fw-bold mb-2">{formatPrice(selectedProduct.price)}</h4>
+
+      
+      <div className="mb-3">
+        <h6>Description</h6>
+        <p className="text-muted">
+          {selectedProduct.productDescription || "No description available."}
+        </p>
+      </div>
+
+     
+      <div className="border-top pt-3">
+        <h6>Owner Information</h6>
+        <div className="d-flex align-items-center gap-3">
+          <img
+            src="https://via.placeholder.com/50"
+            alt="Seller avatar"
+            className="rounded-circle"
+            width="50"
+            height="50"
+          />
+          <div>
+            <p className="mb-1 fw-semibold">
+              {selectedProduct.seller
+                ? `${selectedProduct.seller.firstName} ${selectedProduct.seller.lastName}`
+                : "Community Member"}
+            </p>
+            <small className="text-muted">
+              {selectedProduct.seller?.email || "Member since Jan 2024"}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      
+      <div className="mt-4">
+        <Link
+          to={`/transaction/${selectedProduct.productId}`}
+          className="btn btn-primary w-100"
+          onClick={() => setShowModal(false)}
+        >
+          Buy Now
+        </Link>
+      </div>
+    </div>
+  )}
+</Modal>
+
     </div>
   );
 };
