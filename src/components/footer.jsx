@@ -30,7 +30,7 @@ const Footer = () => {
          
           <div className="col-md-4 mb-3">
             <h5>Contact & Location</h5>
-            <p>Email: support@cputmarketplace.com</p>
+            <p>Email: southpointstudenttrade@gmail.com</p>
             <p>Phone: +27 21 460 3911</p>
 
             <div style={{ width: "100%", height: "150px", marginTop: "10px" }}>

@@ -1,56 +1,96 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom"; 
-import { Button } from "react-bootstrap";
-import { FaSignOutAlt} from "react-icons/fa";
-
+import React, { useEffect, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import logoSt from "../assets/logoSt.png";
 
 const Header = () => {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  const navigate = useNavigate(); 
-  const user = JSON.parse(localStorage.getItem("user")); // get logged-in user
+  // Read user from localStorage on component mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
 
-
-const handleLogout = () => {
+  const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/"); 
+    localStorage.removeItem("studentId");
+    setUser(null);
+    navigate("/");
   };
 
-
   return (
-    <header className="bg-light shadow-sm">
-      <div className="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between py-3">
-        <h1 className="h1 text-primary mb-3">Student Marketplace</h1>
+    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+      <div className="container">
+        <Link className="navbar-brand d-flex align-items-center" to="/">
+          <img src={logoSt} alt="Logo" width="40" className="me-2" />
+          <span style={{ color: "#333", fontWeight: "bold", fontSize: "1.2rem" }}>
+            CPUT Marketplace
+          </span>
+        </Link>
 
-        <nav>
-          <ul className="nav nav-tabs nav-fill">
-            <li className="nav-item">
-              <Link className="nav-link" to="/home">
-                <i className="bi bi-house-door me-1"></i>Home
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto align-items-lg-center">
+            <li className="nav-item me-2">
+              <NavLink className="nav-link fw-semibold" to="/home" end>
+                Home
+              </NavLink>
+            </li>
+            <li className="nav-item me-2">
+              <Link className="btn btn-primary rounded-pill px-4" to="/buy">
+                Buy
               </Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/buy">
-                <i className="bi bi-cart me-1"></i>Buy
+            <li className="nav-item me-3">
+              <Link className="btn btn-success rounded-pill px-4" to="/sell">
+                Sell
               </Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/sell">
-                <i className="bi bi-cash me-1"></i>Sell
-              </Link>
+
+            <li className="nav-item dropdown">
+              <a
+                className="nav-link dropdown-toggle btn btn-outline-secondary rounded-pill px-3"
+                href="#!"
+                id="profileDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {user?.firstName || "Profile"}
+              </a>
+              <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                <li>
+                  <Link className="dropdown-item" to="/profile">
+                    My Account
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={handleLogout}
+                    style={{ cursor: "pointer", border: "none", background: "none", padding: 0 }}
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/profile">
-                <i className="bi bi-person me-1"></i>
-                Profile
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Button variant="danger" onClick={handleLogout}>Logout</Button>
-              </li> 
           </ul>
-        </nav>
+        </div>
       </div>
-    </header>
+    </nav>
   );
 };
 
