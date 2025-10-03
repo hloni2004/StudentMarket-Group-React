@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import NotFound from "./pages/NotFound";
+import LandingPage from "./pages/LandingPage";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +24,13 @@ const App = () => (
     <ToastContainer />
     <BrowserRouter>
       <Routes>
+
+      
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+=======
         <Route path="/" element={<Login />} />
+
         <Route path="/signup" element={<SignUp />} />
         <Route path="/home" element={<Home />} /> 
         <Route path="/sell" element={<Sell />} />
