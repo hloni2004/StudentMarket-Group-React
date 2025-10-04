@@ -27,8 +27,13 @@ export const getStudentById = () => {
    return Promise.reject(new Error("No student is logged in."));
 };
 
-export const updateStudent = (student) => {
-  return axios.put(REST_API_BASE_URL +`/student/update`, student);
+// Update student text details
+export const updateStudent = (studentId, multipartData) => {
+  return axios.patch(`${REST_API_BASE_URL}/student/update/${studentId}`, multipartData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 export const deleteStudent = (studentId) => {

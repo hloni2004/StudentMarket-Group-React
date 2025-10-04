@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Button, Modal, Form } from "react-bootstrap";
+import { Button, Modal, Form, Image } from "react-bootstrap";
 import Header from "../components/Header";
 import { getStudentById, updateStudent } from "../service/StudentService";
 import { useNavigate } from "react-router-dom";
@@ -39,11 +39,25 @@ const Profile = () => {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    firstName: "",
+        lastName: "",
+        email: "",
+        residenceName: "",
+        roomNumber: "",
+        floorNumber: 0,
+        building: "",
+        streetNumber: "",
+        streetName: "",
+        suburb: "",
+        city: "",
+        province: "",
+        postalCode: ""
+  });
   const [residenceId, setResidenceId] = useState(null);
   const [addressId, setAddressId] = useState(null);
-
-const [profilePic, setProfilePic] = useState("/images/placeholder.png");
+const [selectedImageFile, setSelectedImageFile] = useState(null);
+    const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
 
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -51,11 +65,21 @@ const [profilePic, setProfilePic] = useState("/images/placeholder.png");
     localStorage.removeItem("user");
     navigate("/"); 
   };
-
+   const getProfileImageUrl = () => {
+        if (student?.profileImage) {
+            // Handle both Base64 strings and full URLs
+            if (student.profileImage.startsWith('data:image')) {
+                return student.profileImage;
+            }
+            return `data:image/jpeg;base64,${student.profileImage}`; 
+        }
+        return "/images/default-avatar.png";
+    };
+const studentId = localStorage.getItem("studentId");  
   useEffect(() => {
     const fetchStudent = async () => {
       try {
-        const response = await getStudentById();
+        const response = await getStudentById(studentId);
         const data = response.data;
         setStudent(data);
 
@@ -77,6 +101,8 @@ const [profilePic, setProfilePic] = useState("/images/placeholder.png");
           province: addressInfo.province,
           postalCode: addressInfo.postalCode ,
         });
+        setResidenceId(data.residence?.residenceId || null);
+      setAddressId(data.residence?.address?.addressId || null);
 
       } catch (error) {
         console.error(error);
@@ -85,8 +111,20 @@ const [profilePic, setProfilePic] = useState("/images/placeholder.png");
         setLoading(false);
       }
     };
-    fetchStudent();
-  }, []);
+    if (studentId) fetchStudent();
+}, [studentId]);
+
+  const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setSelectedImageFile(file);
+        
+        // Create a local URL for image preview
+        if (file) {
+            setImagePreviewUrl(URL.createObjectURL(file));
+        } else {
+            setImagePreviewUrl(null);
+        }
+    };
 
   const handleInputChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -157,13 +195,23 @@ const handleRemove = async (productId) => {
         }
       }
     };
+     const multipartData = new FormData();
+        multipartData.append(
+            "student",
+            new Blob([JSON.stringify(updatedStudent)], { type: "application/json" })
+        );
 
+        if (selectedImageFile) {
+            multipartData.append("profileImage", selectedImageFile);
+        }
   
-
-    const response = await updateStudent(updatedStudent);
+    const response = await updateStudent(student.studentId, multipartData);
+    
     setStudent(response.data);
-
     setShowModal(false);
+    setSelectedImageFile(null);
+    setImagePreviewUrl(null);
+    document.getElementById("profileImageInput").value = null;
     toast.success("Profile updated successfully!");
 
   } catch (err) {
@@ -207,6 +255,15 @@ const handleRemove = async (productId) => {
   
   <div className="d-flex flex-column align-items-end">
     <Button onClick={() => setShowModal(true)}>Edit Profile</Button>
+     <Image 
+        src={getProfileImageUrl()} 
+        roundedCircle 
+        style={{ width: '150px', height: '150px', objectFit: 'cover', border: '2px solid #ccc' }}
+        alt="Profile Avatar"
+        onError={(e) => {
+        e.target.src = "/images/default-avatar.png";
+      }}
+    />
   </div>
 </div>
     
@@ -344,6 +401,39 @@ const handleRemove = async (productId) => {
             <Form.Group className="mb-3"><Form.Label>Room Number</Form.Label><Form.Control type="text" name="roomNumber" value={formData.roomNumber} onChange={handleInputChange} /></Form.Group>
             <Form.Group className="mb-3"><Form.Label>Floor Number</Form.Label><Form.Control type="number" name="floorNumber" value={formData.floorNumber} onChange={handleInputChange} /></Form.Group>
           </Form>
+          <div className="p-3 mb-4 border rounded mt-4" style={{ backgroundColor: '#f8f9fa' }}>
+                        <h5 className="mb-3">Update Profile Picture</h5>
+                        <div className="d-flex align-items-center">
+                            {/* Current or Preview Image Display */}
+                            <Image 
+                                src={imagePreviewUrl || getProfileImageUrl()} 
+                                roundedCircle 
+                                style={{ width: '60px', height: '60px', objectFit: 'cover', border: '1px solid #ccc' }}
+                            
+                                className="me-3"
+                                onError={(e) => {
+                                    e.target.src = "/images/default-avatar.png";
+                                }}
+                            />
+                            
+                            {/* File Input and Upload Button */}
+                            <div className="flex-grow-1">
+                                <Form.Group controlId="profileImageInput" className="mb-2">
+                                    <Form.Control 
+                                        type="file" 
+                                        onChange={handleFileChange} 
+                                        accept="image/*" 
+                                        size="sm"
+                                    />
+                                </Form.Group>
+                                <small className="d-block text-muted">
+                                    {selectedImageFile
+                                    ? `Selected: ${selectedImageFile.name}`
+                                    : 'Choose an image to upload.'}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
