@@ -11,7 +11,6 @@ const Home = () => {
   const [student, setStudent] = useState({ firstName: "" });
   const [isHoveringBuy, setIsHoveringBuy] = useState(false);
 
-  // Fetch products
   useEffect(() => {
     getAllProducts()
       .then((response) => {
@@ -28,7 +27,6 @@ const Home = () => {
       .catch((err) => console.error("Failed to fetch products:", err));
   }, []);
 
-  // Get logged-in student from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -58,7 +56,6 @@ const Home = () => {
     <>
       <Header />
 
-      {/* Hero Section */}
       <div
         style={{
           height: "35vh",
@@ -137,7 +134,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Value Proposition Section */}
       <div className="container py-4 text-center">
         <div className="row justify-content-center">
           <div className="col-md-10">
@@ -168,7 +164,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Featured Products Slideshow (Single-Item Carousel) */}
       <div
         className="container my-5"
         style={{
