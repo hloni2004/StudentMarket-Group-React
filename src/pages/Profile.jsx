@@ -35,6 +35,7 @@ const residenceAddresses = {
   }
 };
 
+
 const Profile = () => {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -73,8 +74,48 @@ const [selectedImageFile, setSelectedImageFile] = useState(null);
             }
             return `data:image/jpeg;base64,${student.profileImage}`; 
         }
-        return "/images/default-avatar.png";
+        return null;
     };
+    const handleRemoveProfileImage = async () => {
+  try {
+    if (!student) return;
+
+    if (!window.confirm("Are you sure you want to remove your profile image?")) return;
+
+    // Optimistically clear image on UI first
+    setImagePreviewUrl(null);
+    setSelectedImageFile(null);
+    setStudent((prev) => ({ ...prev, profileImage: null }));
+
+    // Clear input field
+    const input = document.getElementById("profileImageInput");
+    if (input) input.value = null;
+
+    // Prepare FormData
+    const updatedStudent = { ...student, profileImage: null };
+    const multipartData = new FormData();
+    multipartData.append(
+      "student",
+      new Blob([JSON.stringify(updatedStudent)], { type: "application/json" })
+    );
+
+    // Send update request
+    const response = await updateStudent(student.studentId, multipartData);
+
+    setStudent(response.data);
+    toast.success("Profile image removed successfully!");
+  } catch (err) {
+    console.error("Error removing profile image:", err);
+    toast.error("Failed to remove profile image. Please try again.");
+  }
+};
+
+    const getInitials = (firstName = "", lastName = "") => {
+  const first = firstName?.charAt(0) || "";
+  const last = lastName?.charAt(0) || "";
+  return (first + last).toUpperCase();
+};
+
 const studentId = localStorage.getItem("studentId");  
   useEffect(() => {
     const fetchStudent = async () => {
@@ -254,17 +295,43 @@ const handleRemove = async (productId) => {
 
   
   <div className="d-flex flex-column align-items-end">
-    <Button onClick={() => setShowModal(true)}>Edit Profile</Button>
-     <Image 
-        src={getProfileImageUrl()} 
-        roundedCircle 
-        style={{ width: '150px', height: '150px', objectFit: 'cover', border: '2px solid #ccc' }}
-        alt="Profile Avatar"
-        onError={(e) => {
-        e.target.src = "/images/default-avatar.png";
+  <Button onClick={() => setShowModal(true)}>Edit Profile</Button>
+
+  {getProfileImageUrl() ? (
+    <Image
+      src={getProfileImageUrl()}
+      roundedCircle
+      style={{
+        width: "150px",
+        height: "150px",
+        objectFit: "cover",
+        border: "2px solid #ccc",
+      }}
+      alt="Profile Avatar"
+      onError={(e) => {
+        // If image fails, fallback to initials
+        e.target.onerror = null;
+        e.target.style.display = "none"; // hide broken <img>
       }}
     />
-  </div>
+  ) : (
+    <div
+      className="d-flex align-items-center justify-content-center"
+      style={{
+        width: "150px",
+        height: "150px",
+        borderRadius: "50%",
+        backgroundColor: "#616868ff",
+        color: "white",
+        fontWeight: "bold",
+        fontSize: "48px",
+        border: "2px solid #ccc",
+      }}
+    >
+      {getInitials(student?.firstName, student?.lastName)}
+    </div>
+  )}
+</div>
 </div>
     
     
@@ -401,39 +468,76 @@ const handleRemove = async (productId) => {
             <Form.Group className="mb-3"><Form.Label>Room Number</Form.Label><Form.Control type="text" name="roomNumber" value={formData.roomNumber} onChange={handleInputChange} /></Form.Group>
             <Form.Group className="mb-3"><Form.Label>Floor Number</Form.Label><Form.Control type="number" name="floorNumber" value={formData.floorNumber} onChange={handleInputChange} /></Form.Group>
           </Form>
-          <div className="p-3 mb-4 border rounded mt-4" style={{ backgroundColor: '#f8f9fa' }}>
-                        <h5 className="mb-3">Update Profile Picture</h5>
-                        <div className="d-flex align-items-center">
-                            {/* Current or Preview Image Display */}
-                            <Image 
-                                src={imagePreviewUrl || getProfileImageUrl()} 
-                                roundedCircle 
-                                style={{ width: '60px', height: '60px', objectFit: 'cover', border: '1px solid #ccc' }}
-                            
-                                className="me-3"
-                                onError={(e) => {
-                                    e.target.src = "/images/default-avatar.png";
-                                }}
-                            />
-                            
-                            {/* File Input and Upload Button */}
-                            <div className="flex-grow-1">
-                                <Form.Group controlId="profileImageInput" className="mb-2">
-                                    <Form.Control 
-                                        type="file" 
-                                        onChange={handleFileChange} 
-                                        accept="image/*" 
-                                        size="sm"
-                                    />
-                                </Form.Group>
-                                <small className="d-block text-muted">
-                                    {selectedImageFile
-                                    ? `Selected: ${selectedImageFile.name}`
-                                    : 'Choose an image to upload.'}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
+                <div
+  className="p-3 mb-4 border rounded mt-4"
+  style={{ backgroundColor: "#f8f9fa" }}
+>
+  <h5 className="mb-3">Update Profile Picture</h5>
+
+  <div className="d-flex align-items-center">
+    {/* Avatar or Initials */}
+    {imagePreviewUrl || student?.profileImage ? (
+      <Image
+        src={imagePreviewUrl || getProfileImageUrl()}
+        roundedCircle
+        style={{
+          width: "60px",
+          height: "60px",
+          objectFit: "cover",
+          border: "1px solid #ccc",
+        }}
+        className="me-3"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = ""; // Clears broken image
+        }}
+      />
+    ) : (
+      <div
+        className="d-flex align-items-center justify-content-center me-3"
+        style={{
+          width: "60px",
+          height: "60px",
+          borderRadius: "50%",
+          backgroundColor: "#616868ff",
+          color: "white",
+          fontWeight: "bold",
+          fontSize: "18px",
+          textTransform: "uppercase",
+          border: "1px solid #ccc",
+        }}
+      >
+        {getInitials(student?.firstName, student?.lastName)}
+      </div>
+    )}
+
+    {/* Upload + Remove Controls */}
+    <div className="flex-grow-1">
+      <Form.Group controlId="profileImageInput" className="mb-2">
+        <Form.Control
+          type="file"
+          onChange={handleFileChange}
+          accept="image/*"
+          size="sm"
+        />
+      </Form.Group>
+      {(student?.profileImage || imagePreviewUrl) && (
+      <Button
+        variant="outline-danger"
+        size="sm"
+        onClick={handleRemoveProfileImage}
+      >
+        Remove Image
+      </Button>
+      )}
+      <small className="d-block text-muted mb-2">
+        {selectedImageFile
+          ? `Selected: ${selectedImageFile.name}`
+          : "Choose an image to upload."}
+      </small>
+    </div>
+  </div>
+</div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
