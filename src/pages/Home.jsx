@@ -76,7 +76,7 @@ const Home = () => {
             width: "100%",
             height: "100%",
             background:
-              "linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(0,0,0,0.9) 100%)",
+              "linear-gradient(to top, rgb(55, 117, 241) 0%, rgba(255, 255, 255, 0.9) 100%)",
             zIndex: 1,
           }}
         ></div>
@@ -212,7 +212,7 @@ const Home = () => {
                       alt={product.name}
                       style={{
                         height: "400px",
-                        objectFit: "cover",
+                        objectFit: "contain",
                         borderRadius: "10px",
                       }}
                     />
@@ -237,7 +237,7 @@ const Home = () => {
 
             {products.length > 1 && (
               <>
-                <button
+                {/* <button
                   className="carousel-control-prev"
                   type="button"
                   data-bs-target="#productSlideshow"
@@ -266,7 +266,7 @@ const Home = () => {
                       padding: "20px",
                     }}
                   ></span>
-                </button>
+                </button> */}
               </>
             )}
 
